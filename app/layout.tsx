@@ -4,43 +4,32 @@ import Header from "./components/Header";
 import ChatList from "./components/ChatList";
 import ChatWindow from "./components/ChatWindow";
 
-const Layout = () => {
-  const [chats, setChats] = useState([]);
-  const [selectedChat, setSelectedChat] = useState(null);
-
-  useEffect(() => {
-    const fetchChats = async () => {
-      const response = await fetch("/api/chats/1");
-      const data = await response.json();
-      setChats(data);
-    };
-
-    fetchChats();
-  }, []);
-
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="layout">
-      {/* Header at the top */}
-      <Header />
+    <html lang="en">
+      <head>
+        <meta charSet="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Chat App</title>
+      </head>
+      <body>
+        <Header />
 
-      {/* Main content (flexbox for sidebar and chat window) */}
-      <div className="main-container">
-        {/* Sidebar */}
-        <div className="sidebar">
-          <ChatList chats={chats} onChatSelect={setSelectedChat} />
+        {/* Main layout structure */}
+        <div className="layout">
+          <div className="main-container">
+            <div className="sidebar">
+              <ChatList chats={[]} onChatSelect={() => {}} />
+            </div>
+            <div className="chat-window">
+              <ChatWindow chat={{ name: "Chat", messages: [] }} />
+            </div>
+          </div>
         </div>
 
-        {/* Chat Window */}
-        <div className="chat-window">
-          {selectedChat ? (
-            <ChatWindow chat={selectedChat} />
-          ) : (
-            <div className="placeholder">Select a chat to start chatting</div>
-          )}
-        </div>
-      </div>
-    </div>
+        {/* Render child components */}
+        {children}
+      </body>
+    </html>
   );
-};
-
-export default Layout;
+}

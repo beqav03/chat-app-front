@@ -1,3 +1,4 @@
+"use client"
 import React, { useState, useEffect } from 'react';
 import ChatList from './ChatList'; // Import your chat list component
 import ChatWindow from './ChatWindow'; // Import your existing chat window component
