@@ -7,8 +7,9 @@ const ChatWindow = ({ chat }) => {
       <h2>{chat.name}</h2>
       <div className="messages">
         {chat.messages.map((message) => (
-          <div key={message.id}>
-            <strong>{message.sender}</strong>: {message.text}
+          <div key={message.id} className={`message ${message.sender === 'me' ? 'sender' : 'receiver'}`}>
+            <p>{message.text}</p>
+            <span className="message-time">{message.time}</span>
           </div>
         ))}
       </div>
