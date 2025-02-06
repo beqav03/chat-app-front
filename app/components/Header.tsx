@@ -1,34 +1,35 @@
+"use client";  // Add this at the very top
 import { useState } from "react";
 import { FaBars } from "react-icons/fa";
-import styles from "./Header.module.css"; // Import styles
+import style from "../styles/Header.module.css"; // Import styles
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <header className={styles.header}>
+    <header className={style.header}>
       {/* Logo */}
-      <div className={styles.logo}>ChatApp</div>
+      <div className={style.logo}>ChatApp</div>
 
       {/* Search Bar */}
-      <div className={styles.searchContainer}>
+      <div className={style.searchContainer}>
         <input
           type="text"
           placeholder="Search..."
-          className={styles.searchInput}
+          className={style.searchInput}
         />
       </div>
 
       {/* Burger Menu */}
-      <div className={styles.menu}>
-        <button onClick={() => setMenuOpen(!menuOpen)} className={styles.menuButton}>
+      <div className={style.menu}>
+        <button onClick={() => setMenuOpen(!menuOpen)} className={style.menuButton}>
           <FaBars size={24} />
         </button>
         {menuOpen && (
-          <div className={styles.menuDropdown}>
-            <a href="#" className={styles.menuItem}>Profile</a>
-            <a href="#" className={styles.menuItem}>Settings</a>
-            <a href="#" className={styles.menuItem}>Logout</a>
+          <div className={style.menuDropdown}>
+            <a href="#" className={style.menuItem}>Profile</a>
+            <a href="#" className={style.menuItem}>Settings</a>
+            <a href="#" className={style.menuItem}>Logout</a>
           </div>
         )}
       </div>
