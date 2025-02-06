@@ -1,7 +1,7 @@
 "use client"
 import React, { useEffect, useState } from 'react';
 import styles from '../styles/Header.module.css';
-import Notification from '../icons/Bell'; // Import the Notification component
+import Bell from '../icons/bell'; // Import the Notification component
 import BurgerMenu from '../icons/BurgerMenu'; // Import the Notification component
 
 const Header: React.FC = () => {
@@ -25,7 +25,7 @@ const Header: React.FC = () => {
       </div>
       <div className={styles.icons}>
         <span className={styles.icon}>
-          <Notification />
+          <Bell />
         </span>
         <span className={styles.icon}>
           <BurgerMenu />
