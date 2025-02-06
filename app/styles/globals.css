@@ -17,6 +17,6 @@ body {
 
 .mainContent {
   display: flex;
-  height: calc(100vh - 60px); /* Subtract header height */
+  height: calc(100vh - 56px); /* Subtract header height */
   width: 100%;
 }
