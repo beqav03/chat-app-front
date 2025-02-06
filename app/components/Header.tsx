@@ -6,16 +6,7 @@ import BurgerMenu from '../icons/BurgerMenu'; // Import the Notification compone
 
 const Header: React.FC = () => {
   // Example state for new messages
-  const [hasNewMessages, setHasNewMessages] = useState<boolean>(false);
-
-  // Simulate new messages being received after 3 seconds
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setHasNewMessages(true);
-    }, 3000); // Simulate receiving a message after 3 seconds
-
-    return () => clearTimeout(timer); // Clean up timer
-  }, []);
+  const [dropdownVisible, setDropdownVisible] = useState(false);
 
   return (
     <header className={styles.header}>
@@ -27,8 +18,21 @@ const Header: React.FC = () => {
         <span className={styles.icon}>
           <Bell />
         </span>
-        <span className={styles.icon}>
+        <span
+          className={styles.icon}
+          onMouseEnter={() => setDropdownVisible(true)}  // Show on hover
+          onMouseLeave={() => setDropdownVisible(false)} // Hide on mouse leave
+        >
           <BurgerMenu />
+          {dropdownVisible && (
+            <div className={styles.dropdown}>
+              <ul>
+                <li>Profile</li>
+                <li>Settings</li>
+                <li>Logout</li>
+              </ul>
+            </div>
+          )}
         </span>
       </div>
     </header>

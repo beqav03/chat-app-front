@@ -28,3 +28,40 @@
     font-size: 20px;
     cursor: pointer;
 }
+
+/* Add hover effect to BurgerMenu */
+.burgerIcon {
+    transition: transform 0.3s ease;
+}
+  
+.burgerIcon:hover {
+    transform: scale(1.5);
+}
+  
+/* Dropdown menu */
+.dropdown {
+    position: absolute;
+    top: 30px; /* Position it below the burger icon */
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 150px;
+    z-index: 10;
+}
+  
+.dropdown ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+  
+.dropdown li {
+    padding: 10px;
+    cursor: pointer;
+}
+  
+.dropdown li:hover {
+    background-color: #f1f1f1;
+}
