@@ -1,4 +1,4 @@
-"use client";  // Add this at the very top
+"use client";
 import { useState } from "react";
 import { FaBars } from "react-icons/fa";
 import style from "../styles/Header.module.css"; // Import styles
