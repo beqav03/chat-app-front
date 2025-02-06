@@ -6,7 +6,7 @@
 }
 
 .sidebar h2 {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .sidebar ul {
@@ -18,8 +18,58 @@
     padding: 8px;
     cursor: pointer;
     border-radius: 4px;
+    height: 60px;
+    background-color: #cfcfcf;
 }
 
 .sidebar li:hover {
     background-color: #f0f0f0;
+}
+
+.friendList {
+    list-style-type: none;
+    padding: 0;
+}
+  
+.friendItem {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 0px;
+}
+  
+.friendPhotoContainer {
+    position: relative;
+    margin-right: 1rem;
+}
+  
+.friendPhoto {
+    width: 60px;
+    height: 30px;
+    border-radius: 3px;
+    object-fit: cover;
+    border: 2px solid #fff;
+}
+  
+.statusIndicator {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+}
+  
+.active {
+    background-color: #4caf50; /* Green for active */
+}
+  
+.inactive {
+    background-color: #ccc; /* Gray for inactive */
+}
+  
+.friendName {
+    font-size: 1rem;
+    font-weight: 400;
 }
