@@ -3,12 +3,16 @@ import React from "react";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import ChatSection from "./ChatSection";
-import styles from "../styles/mainapp.module.css"; // Add new styles
+import styles from "../styles/mainapp.module.css";
 
-const MainApp: React.FC = () => {
+interface MainAppProps {
+  onLogout: () => void; // Define type for onLogout
+}
+
+const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
   return (
     <div className={styles.mainApp}>
-      <Header />
+      <Header onLogout={onLogout} /> {/* Pass Logout Function */}
       <div className={styles.content}>
         <Sidebar />
         <ChatSection />
