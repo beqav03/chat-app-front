@@ -1,71 +1,106 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "../styles/profile.module.css";
 
-interface ProfileModalProps {
-  onClose: () => void;
+interface UserProfile {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  bio: string;
+  profilePicture: string;
 }
 
-const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [profile, setProfile] = useState({
-    photo: "/default-profile.png",
-    firstName: "John",
-    lastName: "Doe",
-    bio: "Hello, I love coding!",
-    email: "john.doe@example.com",
-  });
+const ProfileModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [editing, setEditing] = useState(false);
+  const [formData, setFormData] = useState({ firstName: "", lastName: "", bio: "" });
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   useEffect(() => {
-    // Disable scrolling when modal is open
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = "auto"; // Re-enable scrolling when modal closes
-    };
+    fetchProfile();
   }, []);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setProfile({ ...profile, photo: URL.createObjectURL(e.target.files[0]) });
+  const fetchProfile = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/profile", {
+        headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` },
+      });
+      if (!response.ok) throw new Error("Failed to load profile");
+      const data = await response.json();
+      setProfile(data);
+      setFormData({ firstName: data.firstName, lastName: data.lastName, bio: data.bio || "" });
+    } catch (error) {
+      console.error("Error fetching profile:", error);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setProfile({ ...profile, [e.target.name]: e.target.value });
+  const handleUpdateProfile = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/profile/update-info", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify(formData),
+      });
+      if (!response.ok) throw new Error("Failed to update profile");
+      setEditing(false);
+      fetchProfile();
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
   };
 
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      setSelectedFile(event.target.files[0]);
+    }
+  };
+
+  const handleUploadPicture = async () => {
+    if (!selectedFile) return;
+    const formData = new FormData();
+    formData.append("profilePicture", selectedFile);
+    try {
+      const response = await fetch("http://localhost:3000/profile/update-picture", {
+        method: "PUT",
+        headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` },
+        body: formData,
+      });
+      if (!response.ok) throw new Error("Failed to upload profile picture");
+      fetchProfile();
+    } catch (error) {
+      console.error("Error uploading profile picture:", error);
+    }
+  };
+
+  if (!profile) return <div>Loading...</div>;
+
   return (
-    <div className={`${styles.overlay} ${styles.show}`}>
-      <div className={`${styles.modal} ${styles.show}`}>
+    <div className={styles.modalOverlay}>
+      <div className={styles.modalContent}>
+        <span className={styles.closeButton} onClick={onClose}>&times;</span>
         <h2>Profile</h2>
-        <div className={styles.profileSection}>
-          <label className={styles.photoLabel}>
-            <input type="file" onChange={handleFileChange} hidden />
-            <img src={profile.photo} alt="Profile" className={styles.profilePhoto} />
-          </label>
-        </div>
-
-        <div className={styles.info}>
-          {isEditing ? (
-            <>
-              <input type="text" name="firstName" value={profile.firstName} onChange={handleChange} />
-              <input type="text" name="lastName" value={profile.lastName} onChange={handleChange} />
-              <textarea name="bio" value={profile.bio} onChange={handleChange} />
-              <button onClick={() => setIsEditing(false)}>Save</button>
-            </>
-          ) : (
-            <>
-              <p><strong>Name:</strong> {profile.firstName} {profile.lastName}</p>
-              <p><strong>Bio:</strong> {profile.bio}</p>
-              <p><strong>Email:</strong> {profile.email}</p>
-              <button onClick={() => setIsEditing(true)}>Edit</button>
-            </>
-          )}
-          <button className={styles.changeButton}>Change Email</button>
-          <button className={styles.changeButton}>Change Password</button>
-        </div>
-
-        <button className={styles.closeButton} onClick={onClose}>Close</button>
+        <img src={profile.profilePicture} alt="Profile" className={styles.profilePicture} />
+        <input type="file" onChange={handleFileChange} />
+        <button onClick={handleUploadPicture}>Upload</button>
+        {editing ? (
+          <>
+            <input type="text" value={formData.firstName} onChange={(e) => setFormData({ ...formData, firstName: e.target.value })} />
+            <input type="text" value={formData.lastName} onChange={(e) => setFormData({ ...formData, lastName: e.target.value })} />
+            <textarea value={formData.bio} onChange={(e) => setFormData({ ...formData, bio: e.target.value })} />
+            <button onClick={handleUpdateProfile}>Save</button>
+          </>
+        ) : (
+          <>
+            <p><strong>Name:</strong> {profile.firstName} {profile.lastName}</p>
+            <p><strong>Email:</strong> {profile.email}</p>
+            <p><strong>Bio:</strong> {profile.bio || "No bio available"}</p>
+            <button onClick={() => setEditing(true)}>Edit</button>
+          </>
+        )}
       </div>
     </div>
   );

@@ -1,42 +1,70 @@
-"use client"
-import React, { useState } from 'react';
-import styles from '../styles/chatsection.module.css';
+"use client";
+import React, { useEffect, useState } from "react";
+import io from "socket.io-client";
+import styles from "../styles/chatsection.module.css";
+
+const socket = io("http://localhost:3000"); // Connect to the backend
 
 interface Message {
   content: string;
   sender: {
     name: string;
     photo: string;
-    isActive: boolean;
-    isUser: boolean; // New field to differentiate user from friend
+    isUser: boolean;
   };
   timestamp: string;
 }
 
 const ChatSection: React.FC = () => {
-  const [inputText, setInputText] = useState<string>('');
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      content: 'Hello!',
-      sender: { name: 'John Doe', photo: 'https://via.placeholder.com/50', isActive: true, isUser: false },
-      timestamp: new Date().toLocaleTimeString(),
-    },
-    {
-      content: 'Hi there!',
-      sender: { name: 'You', photo: 'https://via.placeholder.com/50', isActive: true, isUser: true },
-      timestamp: new Date().toLocaleTimeString(),
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [inputText, setInputText] = useState("");
 
-  const handleSendMessage = () => {
-    if (inputText.trim()) {
-      const newMessage: Message = {
-        content: inputText,
-        sender: { name: 'You', photo: 'https://via.placeholder.com/50', isActive: true, isUser: true },
-        timestamp: new Date().toLocaleTimeString(),
-      };
-      setMessages([...messages, newMessage]);
-      setInputText('');
+  useEffect(() => {
+    fetchMessages();
+    socket.on("message", (newMessage: Message) => {
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
+    });
+
+    return () => {
+      socket.off("message");
+    };
+  }, []);
+
+  const fetchMessages = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/chat", {
+        headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` },
+      });
+      if (!response.ok) throw new Error("Failed to load messages");
+      const data = await response.json();
+      setMessages(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleSendMessage = async () => {
+    if (!inputText.trim()) return;
+    const newMessage: Message = {
+      content: inputText,
+      sender: { name: "You", photo: "https://via.placeholder.com/50", isUser: true },
+      timestamp: new Date().toLocaleTimeString(),
+    };
+    setMessages([...messages, newMessage]);
+    socket.emit("send_message", newMessage);
+    setInputText("");
+
+    try {
+      await fetch("http://localhost:3000/chat/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({ message: inputText }),
+      });
+    } catch (error) {
+      console.error("Failed to send message", error);
     }
   };
 
@@ -50,11 +78,8 @@ const ChatSection: React.FC = () => {
                 <img src={message.sender.photo} alt={message.sender.name} className={styles.userPhoto} />
                 <div className={styles.userInfo}>
                   <div className={styles.userName}>{message.sender.name}</div>
-                  <div className={styles.userStatus}>
-                    {message.sender.isActive ? 'Active' : 'Inactive'}
-                  </div>
+                  <div className={styles.timestamp}>{message.timestamp}</div>
                 </div>
-                <div className={styles.timestamp}>{message.timestamp}</div>
               </div>
               <div className={styles.messageContent}>{message.content}</div>
             </div>

@@ -6,12 +6,25 @@ import BurgerMenu from "../icons/BurgerMenu";
 import ProfileModal from "./ProfileModal";
 
 interface HeaderProps {
-  onLogout: () => void; // Define type for onLogout
+  onLogout: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ onLogout }) => { // Accept onLogout prop
+const Header: React.FC<HeaderProps> = ({ onLogout }) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
+
+  const handleLogout = async () => {
+    try {
+      await fetch("http://localhost:3000/auth/logout", {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` },
+      });
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+    localStorage.removeItem("token");
+    onLogout();
+  };
 
   return (
     <>
@@ -35,7 +48,7 @@ const Header: React.FC<HeaderProps> = ({ onLogout }) => { // Accept onLogout pro
                 <ul>
                   <li onClick={() => setIsProfileOpen(true)}>Profile</li>
                   <li>Settings</li>
-                  <li onClick={onLogout}>Logout</li> {/* Call logout function */}
+                  <li onClick={handleLogout}>Logout</li>
                 </ul>
               </div>
             )}
