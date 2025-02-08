@@ -1,8 +1,5 @@
-import Layout from './layout'; // Directly import layout from the app folder
+import AuthPage from "./components/AuthPage";
 
 export default function HomePage() {
-  return (
-    <Layout>
-    </Layout>
-  );
+  return <AuthPage />;
 }
