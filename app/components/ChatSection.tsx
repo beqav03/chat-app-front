@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import io from "socket.io-client";
 import styles from "../styles/chatsection.module.css";
 
-const socket = io("http://localhost:3000"); // Connect to the backend
+const socket = io("http://back-end.com.ge"); // Connect to the backend
 
 interface Message {
   content: string;
@@ -32,7 +32,7 @@ const ChatSection: React.FC = () => {
 
   const fetchMessages = async () => {
     try {
-      const response = await fetch("http://localhost:3000/chat", {
+      const response = await fetch("http://back-end.com.ge/chat", {
         headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` },
       });
       if (!response.ok) throw new Error("Failed to load messages");
@@ -55,7 +55,7 @@ const ChatSection: React.FC = () => {
     setInputText("");
 
     try {
-      await fetch("http://localhost:3000/chat/send", {
+      await fetch("http://back-end.com.ge/chat/send", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

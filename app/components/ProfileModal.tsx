@@ -23,7 +23,7 @@ const ProfileModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
   const fetchProfile = async () => {
     try {
-      const response = await fetch("http://localhost:3000/profile", {
+      const response = await fetch("http://back-end.com.ge/profile", {
         headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` },
       });
       if (!response.ok) throw new Error("Failed to load profile");
@@ -37,7 +37,7 @@ const ProfileModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
   const handleUpdateProfile = async () => {
     try {
-      const response = await fetch("http://localhost:3000/profile/update-info", {
+      const response = await fetch("http://back-end.com.ge/profile/update-info", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -64,7 +64,7 @@ const ProfileModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     const formData = new FormData();
     formData.append("profilePicture", selectedFile);
     try {
-      const response = await fetch("http://localhost:3000/profile/update-picture", {
+      const response = await fetch("http://back-end.com.ge/profile/update-picture", {
         method: "PUT",
         headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` },
         body: formData,

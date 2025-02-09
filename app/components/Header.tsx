@@ -15,7 +15,7 @@ const Header: React.FC<HeaderProps> = ({ onLogout }) => {
 
   const handleLogout = async () => {
     try {
-      await fetch("http://localhost:3000/auth/logout", {
+      await fetch("http://back-end.com.ge/auth/logout", {
         method: "POST",
         headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` },
       });

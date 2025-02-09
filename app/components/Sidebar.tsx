@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import io from "socket.io-client";
 import styles from "../styles/sidebar.module.css";
 
-const socket = io("http://localhost:3000");
+const socket = io("http://back-end.com.ge");
 
 interface Friend {
   id: number;
@@ -31,7 +31,7 @@ const Sidebar: React.FC = () => {
 
   const fetchFriends = async () => {
     try {
-      const response = await fetch("http://localhost:3000/friends", {
+      const response = await fetch("http://back-end.com.ge/friends", {
         headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` },
       });
       if (!response.ok) throw new Error("Failed to load friends");

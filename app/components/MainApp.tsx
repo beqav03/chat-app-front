@@ -22,7 +22,7 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
         return;
       }
       try {
-        const response = await fetch("http://localhost:3000/profile", {
+        const response = await fetch("http://back-end.com.ge/profile", {
           headers: { "Authorization": `Bearer ${token}` },
         });
         if (!response.ok) throw new Error("Unauthorized");
