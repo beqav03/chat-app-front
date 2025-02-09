@@ -48,7 +48,7 @@ const AuthPage: React.FC = () => {
         <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
         <button onClick={handleLogin}>Login</button>
         <p onClick={() => router.push('/register')} style={{ marginTop: '10px', color: '#007bff', cursor: 'pointer', textDecoration: 'underline' }}>
-          Don't have an account? Register here
+          <p>{"Don't have an account? Register here."}</p>
         </p>
       </div>
     </div>
