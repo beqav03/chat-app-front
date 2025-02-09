@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import styles from "../styles/auth.module.css";
 import MainApp from "./MainApp";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://https://back-end.com.ge"; 
+
 const AuthPage: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isRegistering, setIsRegistering] = useState<boolean>(false);
@@ -15,8 +17,8 @@ const AuthPage: React.FC = () => {
   const handleAuth = async (): Promise<void> => {
     try {
       const url = isRegistering
-        ? "back-end.com.geback-end.com.ge/user/register"
-        : "back-end.com.geback-end.com.ge/auth/login";
+        ? `${API_BASE_URL}/user/register`
+        : `${API_BASE_URL}/auth/login`; 
 
       const body = isRegistering
         ? JSON.stringify({ name, email, password, confirmPassword })
@@ -28,13 +30,16 @@ const AuthPage: React.FC = () => {
         body,
       });
 
+      const responseData = await response.json(); 
+      // Parse response JSON to get error message
+
       if (!response.ok) {
-        throw new Error(isRegistering ? "Registration failed" : "Login failed");
+        throw new Error(responseData.message || (isRegistering ? "Registration failed" : "Login failed"));
+        // Show actual error message if available
       }
 
-      const data: { token: string } = await response.json();
       if (!isRegistering) {
-        localStorage.setItem("token", data.token);
+        localStorage.setItem("token", responseData.token);
         setIsAuthenticated(true);
       } else {
         setIsRegistering(false); // Switch to login after successful registration
