@@ -4,18 +4,18 @@ import styles from "../styles/auth.module.css";
 import MainApp from "./MainApp";
 
 const AuthPage: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isRegistering, setIsRegistering] = useState(false);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isRegistering, setIsRegistering] = useState<boolean>(false);
+  const [name, setName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [error, setError] = useState<string>("");
 
-  const handleAuth = async () => {
+  const handleAuth = async (): Promise<void> => {
     try {
       const url = isRegistering
-        ? "http://back-end.com.ge/user/register"
+        ? "http://back-end.com.ge/auth/register"
         : "http://back-end.com.ge/auth/login";
 
       const body = isRegistering
@@ -32,20 +32,23 @@ const AuthPage: React.FC = () => {
         throw new Error(isRegistering ? "Registration failed" : "Login failed");
       }
 
-      const data = await response.json();
+      const data: { token: string } = await response.json();
       if (!isRegistering) {
         localStorage.setItem("token", data.token);
         setIsAuthenticated(true);
       } else {
-        // Registration successful, switch to login
-        setIsRegistering(false);
+        setIsRegistering(false); // Switch to login after successful registration
       }
-    } catch (err:any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unknown error occurred");
+      }
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = (): void => {
     localStorage.removeItem("token");
     setIsAuthenticated(false);
   };
