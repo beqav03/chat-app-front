@@ -15,8 +15,8 @@ const AuthPage: React.FC = () => {
   const handleAuth = async (): Promise<void> => {
     try {
       const url = isRegistering
-        ? "http://back-end.com.ge/user/register"
-        : "http://back-end.com.ge/auth/login";
+        ? "back-end.com.geback-end.com.ge/user/register"
+        : "back-end.com.geback-end.com.ge/auth/login";
 
       const body = isRegistering
         ? JSON.stringify({ name, email, password, confirmPassword })
