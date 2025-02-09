@@ -15,8 +15,8 @@ const AuthPage: React.FC = () => {
   const handleAuth = async (): Promise<void> => {
     try {
       const url = isRegistering
-      ? "http://back-end.com.ge/user/register"
-      : "http://back-end.com.ge/auth/login";
+        ? "https://back-end.com.ge/user/register"
+        : "https://back-end.com.ge/auth/login";
 
       const body = isRegistering
         ? JSON.stringify({ name, email, password, confirmPassword })
@@ -28,12 +28,9 @@ const AuthPage: React.FC = () => {
         body,
       });
 
-      const responseData = await response.json(); 
-      // Parse response JSON to get error message
-
+      const responseData = await response.json();
       if (!response.ok) {
         throw new Error(responseData.message || (isRegistering ? "Registration failed" : "Login failed"));
-        // Show actual error message if available
       }
 
       if (!isRegistering) {
