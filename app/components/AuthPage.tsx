@@ -3,8 +3,6 @@ import React, { useState } from "react";
 import styles from "../styles/auth.module.css";
 import MainApp from "./MainApp";
 
-const API_BASE_URL = "http://https://back-end.com.ge"; 
-
 const AuthPage: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isRegistering, setIsRegistering] = useState<boolean>(false);
@@ -17,8 +15,8 @@ const AuthPage: React.FC = () => {
   const handleAuth = async (): Promise<void> => {
     try {
       const url = isRegistering
-        ? `${API_BASE_URL}/user/register`
-        : `${API_BASE_URL}/auth/login`; 
+      ? "http://back-end.com.ge/user/register"
+      : "http://back-end.com.ge/auth/login";
 
       const body = isRegistering
         ? JSON.stringify({ name, email, password, confirmPassword })
