@@ -1,19 +1,17 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import io from "socket.io-client";
+import io, { Socket } from "socket.io-client";
 import styles from "../styles/chatsection.module.css";
 
-const socket = io("https://back-end.com.ge"); // Connect to backend WebSocket
+interface ChatSectionProps {
+  socket: Socket;
+}
 
-const ChatSection: React.FC = () => {
+const ChatSection: React.FC<ChatSectionProps> = ({ socket }) => {
   const [messages, setMessages] = useState<{ sender: string; content: string }[]>([]);
   const [inputText, setInputText] = useState("");
 
   useEffect(() => {
-    fetch("https://back-end.com.ge/chat/messages")
-      .then((res) => res.json())
-      .then((data) => setMessages(data));
-
     socket.on("new_message", (message) => {
       setMessages((prevMessages) => [...prevMessages, message]);
     });
@@ -21,7 +19,7 @@ const ChatSection: React.FC = () => {
     return () => {
       socket.off("new_message");
     };
-  }, []);
+  }, [socket]);
 
   const handleSendMessage = () => {
     if (inputText.trim()) {
