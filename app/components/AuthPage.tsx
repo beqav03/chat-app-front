@@ -15,7 +15,7 @@ const AuthPage: React.FC = () => {
   const handleAuth = async () => {
     try {
       const url = isRegistering
-        ? "http://back-end.com.ge/auth/register"
+        ? "http://back-end.com.ge/user/register"
         : "http://back-end.com.ge/auth/login";
 
       const body = isRegistering
