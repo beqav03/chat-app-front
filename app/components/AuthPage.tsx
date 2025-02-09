@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import styles from "../styles/auth.module.css";
 import MainApp from "./MainApp";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://https://back-end.com.ge"; 
+const API_BASE_URL = "http://https://back-end.com.ge"; 
 
 const AuthPage: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
