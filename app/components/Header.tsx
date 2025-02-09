@@ -4,6 +4,7 @@ import styles from "../styles/Header.module.css";
 import ProfileModal from "./ProfileModal";
 import BellIcon from "../icons/bell.svg";
 import BurgerMenu from "../icons/menuburger.svg";
+import Image from "next/image";
 
 interface HeaderProps {
   onLogout: () => void;
@@ -35,14 +36,14 @@ const Header: React.FC<HeaderProps> = ({ onLogout }) => {
         </div>
         <div className={styles.icons}>
           <span className={styles.icon}>
-            <img src={BellIcon} alt="Notifications" className={styles.icon} />
+          <Image src={BellIcon} alt="Notifications" width={30} height={30} className={styles.icon} />
           </span>
           <span
             className={styles.icon}
             onMouseEnter={() => setDropdownVisible(true)}
             onMouseLeave={() => setDropdownVisible(false)}
           >
-            <img src={BurgerMenu} alt="Menu" className={styles.icon} />
+            <Image src={BurgerMenu} alt="Menu" width={30} height={30} className={styles.icon} />
             {dropdownVisible && (
               <div className={styles.dropdown}>
                 <ul>

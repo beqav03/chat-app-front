@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import io, { Socket } from "socket.io-client";
+import { Socket } from "socket.io-client";
 import styles from "../styles/chatsection.module.css";
 
 interface ChatSectionProps {
@@ -12,12 +12,16 @@ const ChatSection: React.FC<ChatSectionProps> = ({ socket }) => {
   const [inputText, setInputText] = useState("");
 
   useEffect(() => {
-    socket.on("new_message", (message) => {
+    if (!socket) return;
+
+    const handleNewMessage = (message: { sender: string; content: string }) => {
       setMessages((prevMessages) => [...prevMessages, message]);
-    });
+    };
+
+    socket.on("new_message", handleNewMessage);
 
     return () => {
-      socket.off("new_message");
+      socket.off("new_message", handleNewMessage);
     };
   }, [socket]);
 

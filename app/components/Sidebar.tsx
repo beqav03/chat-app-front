@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import styles from "../styles/sidebar.module.css";
+import Image from "next/image";
 
 interface Friend {
   id: number;
@@ -21,7 +22,7 @@ const Sidebar: React.FC<SidebarProps> = ({ friends }) => {
         {friends.map((friend) => (
           <li key={friend.id} className={styles.friendItem}>
             <div className={styles.friendPhotoContainer}>
-              <img src={friend.photo} alt={friend.name} className={styles.friendPhoto} />
+              <Image src={friend.photo} alt={friend.name} width={50} height={50} className={styles.friendPhoto} />
               <div className={`${styles.statusIndicator} ${friend.active ? styles.active : styles.inactive}`}></div>
             </div>
             <span className={styles.friendName}>{friend.name}</span>
