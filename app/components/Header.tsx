@@ -1,9 +1,10 @@
 "use client";
 import React, { useState } from "react";
 import styles from "../styles/Header.module.css";
-import Bell from "../icons/bell";
-import BurgerMenu from "../icons/BurgerMenu";
 import ProfileModal from "./ProfileModal";
+import BellIcon from "../icons/bell.svg";
+import BurgerMenu from "../icons/menuburger.svg";
+
 
 interface HeaderProps {
   onLogout: () => void;
@@ -35,14 +36,14 @@ const Header: React.FC<HeaderProps> = ({ onLogout }) => {
         </div>
         <div className={styles.icons}>
           <span className={styles.icon}>
-            <Bell />
+          <img src={BellIcon} alt="Notifications" className={styles.icon} />
           </span>
           <span
             className={styles.icon}
             onMouseEnter={() => setDropdownVisible(true)}
             onMouseLeave={() => setDropdownVisible(false)}
           >
-            <BurgerMenu />
+            <img src={BurgerMenu} alt="Notifications" className={styles.icon} />
             {dropdownVisible && (
               <div className={styles.dropdown}>
                 <ul>
