@@ -24,7 +24,7 @@ const AuthPage: React.FC = () => {
       const data = await response.json();
       localStorage.setItem("token", data.token);
       setIsAuthenticated(true);
-    } catch (err) {
+    } catch {
       setError("Invalid email or password");
     }
   };
