@@ -1,9 +1,6 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import io from "socket.io-client";
+import React from "react";
 import styles from "../styles/sidebar.module.css";
-
-const socket = io("http://back-end.com.ge");
 
 interface Friend {
   id: number;
@@ -12,36 +9,11 @@ interface Friend {
   active: boolean;
 }
 
-const Sidebar: React.FC = () => {
-  const [friends, setFriends] = useState<Friend[]>([]);
+interface SidebarProps {
+  friends: Friend[];
+}
 
-  useEffect(() => {
-    fetchFriends();
-    socket.on("friend_status", (updatedFriend: Friend) => {
-      setFriends((prevFriends) =>
-        prevFriends.map((friend) =>
-          friend.id === updatedFriend.id ? { ...friend, active: updatedFriend.active } : friend
-        )
-      );
-    });
-    return () => {
-      socket.off("friend_status");
-    };
-  }, []);
-
-  const fetchFriends = async () => {
-    try {
-      const response = await fetch("http://back-end.com.ge/friends", {
-        headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` },
-      });
-      if (!response.ok) throw new Error("Failed to load friends");
-      const data = await response.json();
-      setFriends(data);
-    } catch (error) {
-      console.error("Error fetching friends:", error);
-    }
-  };
-
+const Sidebar: React.FC<SidebarProps> = ({ friends }) => {
   return (
     <aside className={styles.sidebar}>
       <h2>Friends</h2>

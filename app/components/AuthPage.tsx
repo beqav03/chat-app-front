@@ -1,16 +1,22 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "../styles/auth.module.css";
 import MainApp from "./MainApp";
 
 const AuthPage: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isRegistering, setIsRegistering] = useState<boolean>(false);
-  const [name, setName] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [formData, setFormData] = useState({ name: "", email: "", password: "", confirmPassword: "" });
   const [error, setError] = useState<string>("");
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) setIsAuthenticated(true);
+  }, []);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleAuth = async (): Promise<void> => {
     try {
@@ -19,8 +25,8 @@ const AuthPage: React.FC = () => {
         : "https://back-end.com.ge/auth/login";
 
       const body = isRegistering
-        ? JSON.stringify({ name, email, password, confirmPassword })
-        : JSON.stringify({ email, password });
+        ? JSON.stringify(formData)
+        : JSON.stringify({ email: formData.email, password: formData.password });
 
       const response = await fetch(url, {
         method: "POST",
@@ -37,14 +43,10 @@ const AuthPage: React.FC = () => {
         localStorage.setItem("token", responseData.token);
         setIsAuthenticated(true);
       } else {
-        setIsRegistering(false); // Switch to login after successful registration
+        setIsRegistering(false);
       }
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("An unknown error occurred");
-      }
+      setError(err instanceof Error ? err.message : "An unknown error occurred");
     }
   };
 
@@ -66,32 +68,36 @@ const AuthPage: React.FC = () => {
         {isRegistering && (
           <input
             type="text"
+            name="name"
             placeholder="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={formData.name}
+            onChange={handleChange}
           />
         )}
 
         <input
           type="email"
+          name="email"
           placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={formData.email}
+          onChange={handleChange}
         />
 
         <input
           type="password"
+          name="password"
           placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          value={formData.password}
+          onChange={handleChange}
         />
 
         {isRegistering && (
           <input
             type="password"
+            name="confirmPassword"
             placeholder="Confirm Password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            value={formData.confirmPassword}
+            onChange={handleChange}
           />
         )}
 
@@ -99,16 +105,9 @@ const AuthPage: React.FC = () => {
 
         <p
           onClick={() => setIsRegistering(!isRegistering)}
-          style={{
-            marginTop: "10px",
-            color: "#007bff",
-            cursor: "pointer",
-            textDecoration: "underline",
-          }}
+          style={{ marginTop: "10px", color: "#007bff", cursor: "pointer", textDecoration: "underline" }}
         >
-          {isRegistering
-            ? "Already have an account? Log in here."
-            : "Don't have an account? Register here."}
+          {isRegistering ? "Already have an account? Log in here." : "Don't have an account? Register here."}
         </p>
       </div>
     </div>

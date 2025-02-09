@@ -5,7 +5,6 @@ import ProfileModal from "./ProfileModal";
 import BellIcon from "../icons/bell.svg";
 import BurgerMenu from "../icons/menuburger.svg";
 
-
 interface HeaderProps {
   onLogout: () => void;
 }
@@ -16,7 +15,7 @@ const Header: React.FC<HeaderProps> = ({ onLogout }) => {
 
   const handleLogout = async () => {
     try {
-      await fetch("http://back-end.com.ge/auth/logout", {
+      await fetch("https://back-end.com.ge/auth/logout", {
         method: "POST",
         headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` },
       });
@@ -36,14 +35,14 @@ const Header: React.FC<HeaderProps> = ({ onLogout }) => {
         </div>
         <div className={styles.icons}>
           <span className={styles.icon}>
-          <img src={BellIcon} alt="Notifications" className={styles.icon} />
+            <img src={BellIcon} alt="Notifications" className={styles.icon} />
           </span>
           <span
             className={styles.icon}
             onMouseEnter={() => setDropdownVisible(true)}
             onMouseLeave={() => setDropdownVisible(false)}
           >
-            <img src={BurgerMenu} alt="Notifications" className={styles.icon} />
+            <img src={BurgerMenu} alt="Menu" className={styles.icon} />
             {dropdownVisible && (
               <div className={styles.dropdown}>
                 <ul>
