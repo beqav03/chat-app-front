@@ -2,8 +2,8 @@
 import React, { useState } from "react";
 import styles from "../styles/Header.module.css";
 import ProfileModal from "./ProfileModal";
-import BellIcon from "../icons/bellIcon.svg";
-import BurgerMenu from "../icons/bellMenu.svg";
+import BellIcon from "../icons/bell.svg";
+import BurgerMenu from "../icons/menuburger.svg";
 import Image from "next/image";
 import { fetchWithAuth } from "../utils/api";
 
