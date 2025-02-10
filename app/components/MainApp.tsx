@@ -6,8 +6,9 @@ import Header from "./Header";
 import Sidebar from "./Sidebar";
 import ChatSection from "./ChatSection";
 import styles from "../styles/mainapp.module.css";
+import { fetchWithAuth } from "../utils/api"; // Import API helper
 
-const socket = io("https://back-end.com.ge");
+const socket = io(process.env.NEXT_PUBLIC_BACKEND_URL as string);
 
 interface MainAppProps {
   onLogout: () => void;
@@ -35,42 +36,31 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      router.replace("/login"); // Redirect to login page if no token
+      router.replace("/login"); // Redirect if no token
       return;
     }
 
     const fetchUserProfile = async () => {
-      try {
-        const response = await fetch("https://back-end.com.ge/profile", {
-          headers: { "Authorization": `Bearer ${token}` },
-        });
-        if (!response.ok) throw new Error("Unauthorized");
-        const data = await response.json();
-        setUser(data);
-      } catch (error) {
-        console.error("Error fetching profile:", error);
-        localStorage.removeItem("token");
-        router.replace("/login");
+      const response = await fetchWithAuth("/profile");
+      if (!response) {
+        onLogout(); // Logout if unauthorized
+        return;
       }
+      const data = await response.json();
+      setUser(data);
     };
 
     const fetchFriends = async () => {
-      try {
-        const response = await fetch("https://back-end.com.ge/friends", {
-          headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` },
-        });
-        if (!response.ok) throw new Error("Failed to load friends");
+      const response = await fetchWithAuth("/friends");
+      if (response) {
         const data = await response.json();
         setFriends(data);
-      } catch (error) {
-        console.error("Error fetching friends:", error);
       }
     };
 
     fetchUserProfile();
     fetchFriends();
 
-    // 🔹 Listen for real-time friend status updates
     socket.on("friend_status", (updatedFriend: Friend) => {
       setFriends((prevFriends) =>
         prevFriends.map((friend) =>
@@ -80,9 +70,9 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
     });
 
     return () => {
-      socket.off("friend_status"); // 🔹 Clean up the event listener
+      socket.off("friend_status");
     };
-  }, [router]);
+  }, [router, onLogout]);
 
   if (!user) return <div className={styles.loading}>Loading...</div>;
 
@@ -91,7 +81,7 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
       <Header onLogout={onLogout} />
       <div className={styles.content}>
         <Sidebar friends={friends} />
-        <ChatSection socket={socket} /> {/* 🔹 Pass socket to ChatSection */}
+        <ChatSection socket={socket} />
       </div>
     </div>
   );

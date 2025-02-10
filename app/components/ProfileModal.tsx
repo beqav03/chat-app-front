@@ -1,28 +1,24 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import styles from "../styles/profile.module.css";
+import { fetchWithAuth } from "../utils/api"; // Import API helper
 
 const ProfileModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [user, setUser] = useState<{ name: string; email: string; bio: string }>({ name: "", email: "", bio: "" });
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
-    fetch("https://back-end.com.ge/profile", {
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    })
-      .then((res) => res.json())
+    fetchWithAuth("/profile")
+      .then((res) => res?.json())
       .then((data) => setUser(data));
   }, []);
 
-  const handleUpdateProfile = () => {
-    fetch("https://back-end.com.ge/profile/update-info", {
+  const handleUpdateProfile = async () => {
+    await fetchWithAuth("/profile/update-info", {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
       body: JSON.stringify(user),
-    }).then(() => setIsEditing(false));
+    });
+    setIsEditing(false);
   };
 
   return (

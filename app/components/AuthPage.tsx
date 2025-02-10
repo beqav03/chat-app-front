@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import styles from "../styles/auth.module.css";
 import MainApp from "./MainApp";
+import { fetchWithAuth } from "../utils/api"; 
 
 const AuthPage: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -20,24 +21,18 @@ const AuthPage: React.FC = () => {
 
   const handleAuth = async (): Promise<void> => {
     try {
-      const url = isRegistering
-        ? "https://back-end.com.ge/user/register"
-        : "https://back-end.com.ge/auth/login";
-
+      const url = isRegistering ? "/user/register" : "/auth/login";
       const body = isRegistering
         ? JSON.stringify(formData)
         : JSON.stringify({ email: formData.email, password: formData.password });
 
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body,
-      });
+      const response = await fetchWithAuth(url, { method: "POST", body });
+
+      if (!response || !response.ok) {
+        throw new Error("Authentication failed.");
+      }
 
       const responseData = await response.json();
-      if (!response.ok) {
-        throw new Error(responseData.message || (isRegistering ? "Registration failed" : "Login failed"));
-      }
 
       if (!isRegistering) {
         localStorage.setItem("token", responseData.token);
@@ -66,47 +61,20 @@ const AuthPage: React.FC = () => {
         {error && <p className={styles.error}>{error}</p>}
         
         {isRegistering && (
-          <input
-            type="text"
-            name="name"
-            placeholder="Name"
-            value={formData.name}
-            onChange={handleChange}
-          />
+          <input type="text" name="name" placeholder="Name" value={formData.name} onChange={handleChange} />
         )}
 
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
-        />
+        <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} />
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
-        />
+        <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} />
 
         {isRegistering && (
-          <input
-            type="password"
-            name="confirmPassword"
-            placeholder="Confirm Password"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-          />
+          <input type="password" name="confirmPassword" placeholder="Confirm Password" value={formData.confirmPassword} onChange={handleChange} />
         )}
 
         <button onClick={handleAuth}>{isRegistering ? "Register" : "Login"}</button>
 
-        <p
-          onClick={() => setIsRegistering(!isRegistering)}
-          style={{ marginTop: "10px", color: "#007bff", cursor: "pointer", textDecoration: "underline" }}
-        >
+        <p onClick={() => setIsRegistering(!isRegistering)} className={styles.toggleText}>
           {isRegistering ? "Already have an account? Log in here." : "Don't have an account? Register here."}
         </p>
       </div>

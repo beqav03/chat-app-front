@@ -5,6 +5,7 @@ import ProfileModal from "./ProfileModal";
 import BellIcon from "../icons/bell.svg";
 import BurgerMenu from "../icons/menuburger.svg";
 import Image from "next/image";
+import { fetchWithAuth } from "../utils/api";
 
 interface HeaderProps {
   onLogout: () => void;
@@ -15,14 +16,7 @@ const Header: React.FC<HeaderProps> = ({ onLogout }) => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
 
   const handleLogout = async () => {
-    try {
-      await fetch("https://back-end.com.ge/auth/logout", {
-        method: "POST",
-        headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` },
-      });
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
+    await fetchWithAuth("/auth/logout", { method: "POST" });
     localStorage.removeItem("token");
     onLogout();
   };
@@ -36,14 +30,14 @@ const Header: React.FC<HeaderProps> = ({ onLogout }) => {
         </div>
         <div className={styles.icons}>
           <span className={styles.icon}>
-          <Image src={BellIcon} alt="Notifications" width={30} height={30} className={styles.icon} />
+            <Image src={BellIcon} alt="Notifications" width={30} height={30} />
           </span>
           <span
             className={styles.icon}
             onMouseEnter={() => setDropdownVisible(true)}
             onMouseLeave={() => setDropdownVisible(false)}
           >
-            <Image src={BurgerMenu} alt="Menu" width={30} height={30} className={styles.icon} />
+            <Image src={BurgerMenu} alt="Menu" width={30} height={30} />
             {dropdownVisible && (
               <div className={styles.dropdown}>
                 <ul>
