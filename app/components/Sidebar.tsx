@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import styles from "./styles/sidebar.module.css";
+import styles from "../styles/sidebar.module.css";
 import Image from "next/image";
 
 interface Friend {
