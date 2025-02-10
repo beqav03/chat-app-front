@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import styles from "../styles/profile.module.css";
+import styles from "./styles/profile.module.css";
 import { fetchWithAuth } from "../utils/api"; // Import API helper
 
 const ProfileModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {

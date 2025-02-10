@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import styles from "../styles/chat.module.css";
+import styles from "./styles/chat.module.css";
 import { fetchWithAuth } from "../utils/api"; // Import API helper
 
 interface ChatSectionProps {
