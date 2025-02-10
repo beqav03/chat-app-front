@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { Socket } from "socket.io-client"; // Import the Socket type
 import styles from "../styles/chatsection.module.css";
 import { fetchWithAuth } from "../utils/api"; // Import API helper
 
 interface ChatSectionProps {
-  socket: any;
+  socket: Socket;
 }
 
 const ChatSection: React.FC<ChatSectionProps> = ({ socket }) => {
