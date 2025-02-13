@@ -7,7 +7,10 @@ export async function fetchWithAuth(endpoint: string, options: RequestInit = {})
     return null;
   }
 
-  const url = `${backendUrl.replace(/\/$/, "")}/${endpoint.replace(/^\//, "")}`;
+  const normalizedBackendUrl = backendUrl.replace(/\/$/, "");
+  const normalizedEndpoint = endpoint.replace(/^\//, "");
+
+  const url = `${normalizedBackendUrl}/${normalizedEndpoint}`;
 
   return fetch(url, {
     ...options,
