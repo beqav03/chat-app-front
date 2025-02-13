@@ -26,7 +26,10 @@ const AuthPage: React.FC = () => {
         ? JSON.stringify(formData)
         : JSON.stringify({ email: formData.email, password: formData.password });
 
-      const response = await fetchWithAuth(url, { method: "POST", body });
+        const response = await fetchWithAuth(url, { 
+          method: "POST", 
+          body: JSON.stringify(formData) 
+        });
 
       if (!response || !response.ok) {
         throw new Error("Authentication failed.");
