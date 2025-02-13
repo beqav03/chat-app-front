@@ -1,5 +1,5 @@
 module.exports = {
-  async rewrites() {
-    return [];
+  env: {
+    NEXT_PUBLIC_BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL,
   },
 };
