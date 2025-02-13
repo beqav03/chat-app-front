@@ -38,9 +38,9 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
       setUser(data);
     } catch (error) {
       console.error("Error fetching profile:", error);
-      onLogout(); // Logout if unauthorized
+      onLogout();
     }
-  }, [onLogout]);
+  }, [onLogout]);  
 
   const fetchFriends = useCallback(async () => {
     try {
