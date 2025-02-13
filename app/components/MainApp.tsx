@@ -1,12 +1,11 @@
-"use client";
 import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import io from "socket.io-client";
+import io, { Socket } from "socket.io-client";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import ChatSection from "./ChatSection";
 import styles from "../styles/mainapp.module.css";
-import { fetchWithAuth } from "../utils/api"; // Import API helper
+import { fetchWithAuth } from "../utils/api";
 
 interface MainAppProps {
   onLogout: () => void;
@@ -28,6 +27,7 @@ interface Friend {
 const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
   const [user, setUser] = useState<User | null>(null);
   const [friends, setFriends] = useState<Friend[]>([]);
+  const [socket, setSocket] = useState<Socket | null>(null);
   const router = useRouter();
 
   const fetchUserProfile = useCallback(async () => {
@@ -40,7 +40,7 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
       console.error("Error fetching profile:", error);
       onLogout();
     }
-  }, [onLogout]);  
+  }, [onLogout]);
 
   const fetchFriends = useCallback(async () => {
     try {
@@ -56,19 +56,21 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
-      router.replace("/login"); // Redirect if no token
+      router.replace("/login");
       return;
     }
 
     fetchUserProfile();
     fetchFriends();
 
-    const socket = io(process.env.NEXT_PUBLIC_BACKEND_URL!, {
+    // Create a single socket instance
+    const newSocket = io(process.env.NEXT_PUBLIC_BACKEND_URL!, {
       transports: ["websocket"],
       withCredentials: true,
     });
+    setSocket(newSocket);
 
-    socket.on("friend_status", (updatedFriend: Friend) => {
+    newSocket.on("friend_status", (updatedFriend: Friend) => {
       setFriends((prevFriends) =>
         prevFriends.map((friend) =>
           friend.id === updatedFriend.id ? { ...friend, active: updatedFriend.active } : friend
@@ -77,8 +79,8 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
     });
 
     return () => {
-      socket.off("friend_status");
-      socket.disconnect();
+      newSocket.off("friend_status");
+      newSocket.disconnect();
     };
   }, [router, fetchUserProfile, fetchFriends]);
 
@@ -89,7 +91,7 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
       <Header onLogout={onLogout} />
       <div className={styles.content}>
         <Sidebar friends={friends} />
-        <ChatSection socket={io(process.env.NEXT_PUBLIC_BACKEND_URL!)} />
+        {socket && <ChatSection socket={socket} />}
       </div>
     </div>
   );
