@@ -1,6 +1,7 @@
 export async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+  console.log("Using API URL:", process.env.NEXT_PUBLIC_BACKEND_URL); // ✅ Debug log
 
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   if (!backendUrl) {
     console.error("NEXT_PUBLIC_BACKEND_URL is missing. Check AWS Amplify settings.");
     return null;
