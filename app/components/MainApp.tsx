@@ -8,7 +8,10 @@ import ChatSection from "./ChatSection";
 import styles from "../styles/mainapp.module.css";
 import { fetchWithAuth } from "../utils/api"; // Import API helper
 
-const socket = io(process.env.NEXT_PUBLIC_BACKEND_URL as string);
+const socket = io(process.env.NEXT_PUBLIC_BACKEND_URL, {
+  transports: ["websocket"],
+  withCredentials: true,
+});
 
 interface MainAppProps {
   onLogout: () => void;
