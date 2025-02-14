@@ -3,8 +3,14 @@ import React, { useState, useEffect } from "react";
 import styles from "../styles/profile.module.css";
 import { fetchWithAuth } from "../utils/api";
 
+interface UserProfile {
+  name: string;
+  email: string;
+  bio: string;
+}
+
 const ProfileModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
-  const [user, setUser] = useState<{ name: string; email: string; bio: string }>({ name: "", email: "", bio: "" });
+  const [user, setUser] = useState<UserProfile>({ name: "", email: "", bio: "" });
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -13,7 +19,7 @@ const ProfileModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     fetchWithAuth("/profile")
       .then((res) => res?.json())
       .then((data) => setUser(data))
-      .catch((err) => setError("Failed to fetch profile"));
+      .catch(() => setError("Failed to fetch profile")); // Removed unused `err` variable
   }, []);
 
   const handleUpdateProfile = async () => {
@@ -29,8 +35,9 @@ const ProfileModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         body: JSON.stringify(user),
       });
       setIsEditing(false);
-    } catch (err: any) {
+    } catch (error) {
       setError("Failed to update profile");
+      console.error("Update profile error:", error); // Log the error for debugging
     } finally {
       setIsLoading(false);
     }
@@ -43,17 +50,31 @@ const ProfileModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         {error && <p className={styles.error}>{error}</p>}
         {isEditing ? (
           <>
-            <input type="text" value={user.name} onChange={(e) => setUser({ ...user, name: e.target.value })} />
-            <input type="text" value={user.bio} onChange={(e) => setUser({ ...user, bio: e.target.value })} />
+            <input
+              type="text"
+              value={user.name}
+              onChange={(e) => setUser({ ...user, name: e.target.value })}
+            />
+            <input
+              type="text"
+              value={user.bio}
+              onChange={(e) => setUser({ ...user, bio: e.target.value })}
+            />
             <button onClick={handleUpdateProfile} disabled={isLoading}>
               {isLoading ? "Saving..." : "Save"}
             </button>
           </>
         ) : (
           <>
-            <p><strong>Name:</strong> {user.name}</p>
-            <p><strong>Email:</strong> {user.email}</p>
-            <p><strong>Bio:</strong> {user.bio}</p>
+            <p>
+              <strong>Name:</strong> {user.name}
+            </p>
+            <p>
+              <strong>Email:</strong> {user.email}
+            </p>
+            <p>
+              <strong>Bio:</strong> {user.bio}
+            </p>
             <button onClick={() => setIsEditing(true)}>Edit</button>
           </>
         )}
