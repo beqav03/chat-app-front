@@ -28,6 +28,7 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
   const [user, setUser] = useState<User | null>(null);
   const [friends, setFriends] = useState<Friend[]>([]);
   const [socket, setSocket] = useState<Socket | null>(null);
+  const [error, setError] = useState("");
   const router = useRouter();
 
   const fetchUserProfile = useCallback(async () => {
@@ -50,6 +51,7 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
       setFriends(data);
     } catch (error) {
       console.error("Error fetching friends:", error);
+      setError("Failed to fetch friends");
     }
   }, []);
 
@@ -63,12 +65,21 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
     fetchUserProfile();
     fetchFriends();
 
-    // Create a single socket instance
     const newSocket = io(process.env.NEXT_PUBLIC_BACKEND_URL!, {
       transports: ["websocket"],
       withCredentials: true,
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
     });
-    setSocket(newSocket);
+
+    newSocket.on("connect", () => {
+      console.log("Socket connected");
+    });
+
+    newSocket.on("disconnect", () => {
+      console.log("Socket disconnected");
+    });
 
     newSocket.on("friend_status", (updatedFriend: Friend) => {
       setFriends((prevFriends) =>
@@ -77,6 +88,8 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
         )
       );
     });
+
+    setSocket(newSocket);
 
     return () => {
       newSocket.off("friend_status");
@@ -89,6 +102,7 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
   return (
     <div className={styles.mainApp}>
       <Header onLogout={onLogout} />
+      {error && <div className={styles.error}>{error}</div>}
       <div className={styles.content}>
         <Sidebar friends={friends} />
         {socket && <ChatSection socket={socket} />}

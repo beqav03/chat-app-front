@@ -10,12 +10,23 @@ export async function fetchWithAuth(endpoint: string, options: RequestInit = {})
     backendUrl.endsWith("/") ? backendUrl.slice(0, -1) : backendUrl // Ensure no trailing slash
   ).toString();
 
-  return fetch(url, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-      ...options.headers,
-    },
-  });
+  try {
+    const response = await fetch(url, {
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        ...options.headers,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return response;
+  } catch (error) {
+    console.error("Fetch error:", error);
+    throw error;
+  }
 }

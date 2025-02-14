@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import styles from "../styles/sidebar.module.css";
 import Image from "next/image";
 
@@ -15,11 +15,24 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ friends }) => {
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredFriends = friends.filter((friend) =>
+    friend.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <aside className={styles.sidebar}>
       <h2>Friends</h2>
+      <input
+        type="text"
+        placeholder="Search friends..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        className={styles.searchInput}
+      />
       <ul className={styles.friendList}>
-        {friends.map((friend) => (
+        {filteredFriends.map((friend) => (
           <li key={friend.id} className={styles.friendItem}>
             <div className={styles.friendPhotoContainer}>
               <Image src={friend.photo} alt={friend.name} width={50} height={50} className={styles.friendPhoto} />
