@@ -29,7 +29,7 @@ const ProfileModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         body: JSON.stringify(user),
       });
       setIsEditing(false);
-    } catch (er: any) {
+    } catch (err: any) {
       setError("Failed to update profile");
     } finally {
       setIsLoading(false);
