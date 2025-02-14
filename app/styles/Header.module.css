@@ -5,43 +5,69 @@
     padding: 10px 20px;
     background-color: #fff;
     border-bottom: 1px solid #ddd;
-}
-
-.logo {
+  }
+  
+  .logo {
     font-size: 24px;
     font-weight: bold;
-}
-
-.search input {
+    color: #007bff;
+  }
+  
+  .search input {
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
     width: 350px;
-}
-
-.icons {
+  }
+  
+  .icons {
     display: flex;
     gap: 20px;
-}
-
-.icon {
-    font-size: 20px;
+    align-items: center;
+  }
+  
+  .icon {
     cursor: pointer;
-}
-
-/* Add hover effect to BurgerMenu */
-.burgerIcon {
-    transition: transform 0.3s ease;
-}
+    position: relative;
+  }
   
-.burgerIcon:hover {
-    transform: scale(1.5);
-}
+  .icon img {
+    width: 30px;
+    height: 30px;
+  }
   
-/* Dropdown menu */
-.dropdown {
+  .notificationsDropdown {
     position: absolute;
-    top: 30px; /* Position it below the burger icon */
+    top: 40px;
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 250px;
+    z-index: 10;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  
+  .notificationsDropdown ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .notificationsDropdown li {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .notificationsDropdown li:last-child {
+    border-bottom: none;
+  }
+  
+  .dropdown {
+    position: absolute;
+    top: 40px;
     right: 0;
     background-color: #fff;
     border: 1px solid #ddd;
@@ -49,19 +75,19 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     width: 150px;
     z-index: 10;
-}
+  }
   
-.dropdown ul {
+  .dropdown ul {
     list-style-type: none;
     padding: 0;
     margin: 0;
-}
+  }
   
-.dropdown li {
+  .dropdown li {
     padding: 10px;
     cursor: pointer;
-}
+  }
   
-.dropdown li:hover {
+  .dropdown li:hover {
     background-color: #f1f1f1;
-}
+  }

@@ -2,13 +2,14 @@
 import React, { useState, useEffect } from "react";
 import styles from "../styles/auth.module.css";
 import MainApp from "./MainApp";
-import { fetchWithAuth } from "../utils/api"; 
+import { fetchWithAuth } from "../utils/api";
 
 const AuthPage: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isRegistering, setIsRegistering] = useState<boolean>(false);
   const [formData, setFormData] = useState({ name: "", email: "", password: "", confirmPassword: "" });
   const [error, setError] = useState<string>("");
+  const [passwordStrength, setPasswordStrength] = useState<string>("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -17,15 +18,28 @@ const AuthPage: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (e.target.name === "password") {
+      setPasswordStrength(checkPasswordStrength(e.target.value));
+    }
+  };
+
+  const checkPasswordStrength = (password: string): string => {
+    if (password.length < 6) return "Weak";
+    if (password.length < 10) return "Medium";
+    return "Strong";
   };
 
   const handleAuth = async (): Promise<void> => {
     try {
+      if (isRegistering && formData.password !== formData.confirmPassword) {
+        setError("Passwords do not match");
+        return;
+      }
+
       const url = isRegistering 
         ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/user/register`
         : `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`;
-  
-      // Use fetchWithAuth or fetch directly
+
       const response = await fetchWithAuth(url, { 
         method: "POST", 
         body: JSON.stringify(formData) 
@@ -70,15 +84,33 @@ const AuthPage: React.FC = () => {
         <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} />
 
         <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} />
-
-        {isRegistering && (
-          <input type="password" name="confirmPassword" placeholder="Confirm Password" value={formData.confirmPassword} onChange={handleChange} />
+       {isRegistering && (
+          <input
+            type="password"
+            name="confirmPassword"
+            placeholder="Confirm Password"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+          />
         )}
 
-        <button onClick={handleAuth}>{isRegistering ? "Register" : "Login"}</button>
+        {isRegistering && (
+          <p className={styles.passwordStrength}>
+            Password Strength: <span>{passwordStrength}</span>
+          </p>
+        )}
 
-        <p onClick={() => setIsRegistering(!isRegistering)} className={styles.toggleText}>
-          {isRegistering ? "Already have an account? Log in here." : "Don't have an account? Register here."}
+        <button onClick={handleAuth} className={styles.authButton}>
+          {isRegistering ? "Register" : "Login"}
+        </button>
+
+        <p
+          onClick={() => setIsRegistering(!isRegistering)}
+          className={styles.toggleText}
+        >
+          {isRegistering
+            ? "Already have an account? Log in here."
+            : "Don't have an account? Register here."}
         </p>
       </div>
     </div>
