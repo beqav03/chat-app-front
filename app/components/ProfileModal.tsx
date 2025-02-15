@@ -38,7 +38,7 @@ const ProfileModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
     setIsLoading(true);
     try {
-      const response: any = await fetchWithAuth("/profile/update-info", {
+      const response = await fetchWithAuth("/profile/update-info", {
         method: "PUT",
         body: JSON.stringify(user),
       });
