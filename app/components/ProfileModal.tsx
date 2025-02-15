@@ -17,9 +17,17 @@ const ProfileModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
   useEffect(() => {
     fetchWithAuth("/profile")
-      .then((res) => res?.json())
+      .then((res: any) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then((data) => setUser(data))
-      .catch(() => setError("Failed to fetch profile")); // Removed unused `err` variable
+      .catch((error) => {
+        console.error("Error fetching profile:", error);
+        setError("Failed to fetch profile");
+      });
   }, []);
 
   const handleUpdateProfile = async () => {
@@ -30,14 +38,19 @@ const ProfileModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
     setIsLoading(true);
     try {
-      await fetchWithAuth("/profile/update-info", {
+      const response: any = await fetchWithAuth("/profile/update-info", {
         method: "PUT",
         body: JSON.stringify(user),
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       setIsEditing(false);
     } catch (error) {
+      console.error("Update profile error:", error);
       setError("Failed to update profile");
-      console.error("Update profile error:", error); // Log the error for debugging
     } finally {
       setIsLoading(false);
     }
