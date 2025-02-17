@@ -1,101 +1,66 @@
-"use client";
-import React, { useState, useEffect } from "react";
-import styles from "../styles/profile.module.css";
+import React, { useEffect, useState } from "react";
+import styles from "../styles/profileModal.module.css";
 import { fetchWithAuth } from "../utils/api";
 
 interface UserProfile {
+  id: number;
   name: string;
   email: string;
-  bio: string;
+  role: string;
+  profilePicture?: string;
+  bio?: string;
 }
 
-const ProfileModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
-  const [user, setUser] = useState<UserProfile>({ name: "", email: "", bio: "" });
-  const [isEditing, setIsEditing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+interface ProfileModalProps {
+  onClose: () => void;
+}
+
+const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
+  const [user, setUser] = useState<UserProfile | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetchWithAuth("/profile")
-      .then((res) => {
-        if (!res) {
-          throw new Error("Failed to fetch profile: No response");
-        }
-        if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
-        }
-        return res.json();
-      })
-      .then((data) => setUser(data))
-      .catch((error) => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await fetchWithAuth("/profile");
+        if (!response) throw new Error("Unauthorized");
+        if (!response.ok) throw new Error("Failed to fetch profile");
+        const data = await response.json();
+        setUser(data);
+      } catch (error) {
         console.error("Error fetching profile:", error);
-        setError("Failed to fetch profile");
-      });
+        setError("Failed to load profile");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserProfile();
   }, []);
 
-  const handleUpdateProfile = async () => {
-    if (!user.name || !user.email) {
-      setError("Name and email are required");
-      return;
-    }
+  if (isLoading) {
+    return <div className={styles.loading}>Loading...</div>;
+  }
 
-    setIsLoading(true);
-    try {
-      const response = await fetchWithAuth("/profile/update-info", {
-        method: "PUT",
-        body: JSON.stringify(user),
-      });
-
-      if (!response) {
-        throw new Error("Failed to update profile: No response");
-      }
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      setIsEditing(false);
-    } catch (error) {
-      console.error("Update profile error:", error);
-      setError("Failed to update profile");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  if (error) {
+    return <div className={styles.error}>{error}</div>;
+  }
 
   return (
-    <div className={styles.profileModal}>
+    <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
-        <h2>Profile</h2>
-        {error && <p className={styles.error}>{error}</p>}
-        {isEditing ? (
-          <>
-            <input
-              type="text"
-              value={user.name}
-              onChange={(e) => setUser({ ...user, name: e.target.value })}
-            />
-            <input
-              type="text"
-              value={user.bio}
-              onChange={(e) => setUser({ ...user, bio: e.target.value })}
-            />
-            <button onClick={handleUpdateProfile} disabled={isLoading}>
-              {isLoading ? "Saving..." : "Save"}
-            </button>
-          </>
-        ) : (
-          <>
-            <p>
-              <strong>Name:</strong> {user.name}
-            </p>
-            <p>
-              <strong>Email:</strong> {user.email}
-            </p>
-            <p>
-              <strong>Bio:</strong> {user.bio}
-            </p>
-            <button onClick={() => setIsEditing(true)}>Edit</button>
-          </>
+        <h2>Profile Information</h2>
+        <p><strong>Name:</strong> {user?.name}</p>
+        <p><strong>Email:</strong> {user?.email}</p>
+        <p><strong>Role:</strong> {user?.role}</p>
+        {user?.bio && <p><strong>Bio:</strong> {user.bio}</p>}
+        {user?.profilePicture && (
+          <img
+            src={user.profilePicture}
+            alt="Profile"
+            className={styles.profilePicture}
+          />
         )}
         <button onClick={onClose}>Close</button>
       </div>

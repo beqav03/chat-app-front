@@ -1,14 +1,11 @@
 export async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   if (!backendUrl) {
-    console.error("NEXT_PUBLIC_BACKEND_URL is missing. Check AWS Amplify settings.");
+    console.error("NEXT_PUBLIC_BACKEND_URL is missing.");
     return null;
   }
 
-  const url = new URL(
-    endpoint.replace(/^\//, ""), 
-    backendUrl.endsWith("/") ? backendUrl.slice(0, -1) : backendUrl
-  ).toString();
+  const url = `${backendUrl}${endpoint}`;
 
   try {
     const response = await fetch(url, {

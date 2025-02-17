@@ -9,6 +9,7 @@ import { fetchWithAuth } from "../utils/api";
 
 interface HeaderProps {
   onLogout: () => void;
+  onProfileClick: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({ onLogout }) => {
