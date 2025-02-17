@@ -17,7 +17,10 @@ const ProfileModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
   useEffect(() => {
     fetchWithAuth("/profile")
-      .then((res: any) => {
+      .then((res) => {
+        if (!res) {
+          throw new Error("Failed to fetch profile: No response");
+        }
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
         }
@@ -43,6 +46,9 @@ const ProfileModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         body: JSON.stringify(user),
       });
 
+      if (!response) {
+        throw new Error("Failed to update profile: No response");
+      }
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

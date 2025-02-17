@@ -31,29 +31,25 @@ const AuthPage: React.FC = () => {
 
   const handleAuth = async (): Promise<void> => {
     try {
-      if (isRegistering && formData.password !== formData.confirmPassword) {
-        setError("Passwords do not match");
-        return;
-      }
-
-      const url = isRegistering 
+      const url = isRegistering
         ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/user/register`
         : `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`;
-
-      const response = await fetchWithAuth(url, { 
-        method: "POST", 
-        body: JSON.stringify(formData) 
+  
+      const response = await fetchWithAuth(url, {
+        method: "POST",
+        body: JSON.stringify(formData),
       });
-
+  
       if (!response || !response.ok) {
         throw new Error("Authentication failed.");
       }
-
+  
       const responseData = await response.json();
-
+  
       if (!isRegistering) {
+        // Save the token to localStorage
         localStorage.setItem("token", responseData.token);
-        setIsAuthenticated(true);
+        setIsAuthenticated(true); // Update authentication state
       } else {
         setIsRegistering(false);
       }
