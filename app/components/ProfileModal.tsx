@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import styles from "../styles/profileModal.module.css";
+import styles from "@/styles/profileModal.module.css";
 import { fetchWithAuth } from "../utils/api";
 
 interface UserProfile {
