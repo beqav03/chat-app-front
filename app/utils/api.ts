@@ -6,8 +6,8 @@ export async function fetchWithAuth(endpoint: string, options: RequestInit = {})
   }
 
   const url = new URL(
-    endpoint.replace(/^\//, ""), // Remove leading slash from endpoint
-    backendUrl.endsWith("/") ? backendUrl.slice(0, -1) : backendUrl // Ensure no trailing slash
+    endpoint.replace(/^\//, ""), 
+    backendUrl.endsWith("/") ? backendUrl.slice(0, -1) : backendUrl
   ).toString();
 
   try {

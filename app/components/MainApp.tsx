@@ -65,7 +65,7 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
     fetchUserProfile();
     fetchFriends();
 
-    const newSocket = io(process.env.NEXT_PUBLIC_BACKEND_URL!, {
+    const newSocket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}/socket.io`, {
       transports: ["websocket"],
       withCredentials: true,
       reconnection: true,

@@ -47,9 +47,13 @@ const AuthPage: React.FC = () => {
       const responseData = await response.json();
   
       if (!isRegistering) {
-        // Save the token to localStorage
-        localStorage.setItem("token", responseData.token);
-        setIsAuthenticated(true); // Update authentication state
+        if (responseData.token) {
+          localStorage.setItem("token", responseData.token);
+          console.log("Token saved:", responseData.token);
+          setIsAuthenticated(true);
+        } else {
+          console.error("No token received from backend.");
+        }
       } else {
         setIsRegistering(false);
       }
