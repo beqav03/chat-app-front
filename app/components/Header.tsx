@@ -9,10 +9,10 @@ import { fetchWithAuth } from "../utils/api";
 
 interface HeaderProps {
   onLogout: () => void;
-  onProfileClick: () => void;
+  setSearchQuery: (query: string) => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ onLogout }) => {
+const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery }) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [notifications, setNotifications] = useState<string[]>([]);
@@ -44,7 +44,11 @@ const Header: React.FC<HeaderProps> = ({ onLogout }) => {
       <header className={styles.header}>
         <div className={styles.logo}>Logo</div>
         <div className={styles.search}>
-          <input type="text" placeholder="Search People" />
+          <input 
+            type="text" 
+            placeholder="Search Friends" 
+            onChange={(e) => setSearchQuery(e.target.value)} 
+          />
         </div>
         <div className={styles.icons}>
           <span className={styles.icon} onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}>
