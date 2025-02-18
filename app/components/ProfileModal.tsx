@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "../styles/profile.module.css";
 import { fetchWithAuth } from "../utils/api";
+import Image from "next/image";
 
 interface UserProfile {
   id: number;
@@ -56,10 +57,12 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
         <p><strong>Role:</strong> {user?.role}</p>
         {user?.bio && <p><strong>Bio:</strong> {user.bio}</p>}
         {user?.profilePicture && (
-          <img
-            src={user.profilePicture}
-            alt="Profile"
-            className={styles.profilePicture}
+          <Image
+          src={user.profilePicture}
+          alt="Profile"
+          width={150}
+          height={150}
+          className={styles.profilePicture}
           />
         )}
         <button onClick={onClose}>Close</button>
