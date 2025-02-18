@@ -67,7 +67,7 @@
   
   .dropdown {
     position: absolute;
-    top: 40px;
+    top: 100%;
     right: 0;
     background-color: #fff;
     border: 1px solid #ddd;
@@ -75,10 +75,15 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     width: 150px;
     z-index: 10;
+    display: none;
+  }
+  
+  .icon:hover .dropdown {
+    display: block;
   }
   
   .dropdown ul {
-    list-style-type: none;
+    list-style: none;
     padding: 0;
     margin: 0;
   }
@@ -91,3 +96,4 @@
   .dropdown li:hover {
     background-color: #f1f1f1;
   }
+  

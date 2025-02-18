@@ -12,11 +12,10 @@ interface Friend {
 
 interface SidebarProps {
   friends: Friend[];
+  searchQuery: string;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ friends }) => {
-  const [searchQuery, setSearchQuery] = useState("");
-
+const Sidebar: React.FC<SidebarProps> = ({ friends, searchQuery }) => {
   const filteredFriends = friends.filter((friend) =>
     friend.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -24,13 +23,6 @@ const Sidebar: React.FC<SidebarProps> = ({ friends }) => {
   return (
     <aside className={styles.sidebar}>
       <h2>Friends</h2>
-      <input
-        type="text"
-        placeholder="Search friends..."
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        className={styles.searchInput}
-      />
       <ul className={styles.friendList}>
         {filteredFriends.map((friend) => (
           <li key={friend.id} className={styles.friendItem}>
