@@ -24,6 +24,7 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [error, setError] = useState("");
   const [isProfileOpen, setIsProfileOpen] = useState(false); // State to toggle ProfileModal
+  const [searchQuery, setSearchQuery] = useState(""); // ✅ Added this
   const router = useRouter();
 
   const fetchFriends = useCallback(async () => {
@@ -83,11 +84,11 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
 
   return (
     <div className={styles.mainApp}>
-      <Header onLogout={onLogout} onProfileClick={() => setIsProfileOpen(true)} />
+      <Header onLogout={onLogout} onProfileClick={() => setIsProfileOpen(true)} setSearchQuery={setSearchQuery} /> {/* ✅ Fixed: Passed setSearchQuery */}
       {error && <div className={styles.error}>{error}</div>}
       <div className={styles.content}>
-        <Sidebar friends={friends} />
-        {socket && <ChatSection socket={socket} />}
+      <Sidebar friends={friends} searchQuery={searchQuery} /> {/* ✅ Fixed: Passed searchQuery */}
+      {socket && <ChatSection socket={socket} />}
       </div>
       {isProfileOpen && (
         <ProfileModal onClose={() => setIsProfileOpen(false)} />

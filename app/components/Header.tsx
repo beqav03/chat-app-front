@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import styles from "../styles/Header.module.css";
-import ProfileModal from "./ProfileModal";
 import BellIcon from "../icons/bell.svg";
 import BurgerMenu from "../icons/menuburger.svg";
 import Image from "next/image";
@@ -10,10 +9,10 @@ import { fetchWithAuth } from "../utils/api";
 interface HeaderProps {
   onLogout: () => void;
   setSearchQuery: (query: string) => void;
+  onProfileClick?: () => void; // Added this
 }
 
-const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery }) => {
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
+const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClick }) => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [notifications, setNotifications] = useState<string[]>([]);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
@@ -72,7 +71,7 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery }) => {
             {dropdownVisible && (
               <div className={styles.dropdown}>
                 <ul>
-                  <li onClick={() => setIsProfileOpen(true)}>Profile</li>
+                  <li onClick={onProfileClick}>Profile</li> {/* Updated this */}
                   <li>Settings</li>
                   <li onClick={handleLogout}>Logout</li>
                 </ul>
@@ -81,8 +80,6 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery }) => {
           </span>
         </div>
       </header>
-
-      {isProfileOpen && <ProfileModal onClose={() => setIsProfileOpen(false)} />}
     </>
   );
 };
