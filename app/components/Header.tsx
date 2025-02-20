@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import styles from "../styles/Header.module.css";
 import BellIcon from "../icons/bell.svg";
 import BurgerMenu from "../icons/menuburger.svg";
+import MagnifyingGlass from "../icons/magnifying-glass.svg"; // Import the magnifying glass icon
 import Image from "next/image";
 import { fetchWithAuth } from "../utils/api";
 
@@ -16,6 +17,7 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [notifications, setNotifications] = useState<string[]>([]);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [searchInput, setSearchInput] = useState("");
 
   const handleLogout = async () => {
     await fetchWithAuth("/auth/logout", { method: "POST" });
@@ -34,6 +36,10 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
     }
   };
 
+  const handleSearch = () => {
+    setSearchQuery(searchInput);
+  };
+
   useEffect(() => {
     fetchNotifications();
   }, []);
@@ -43,10 +49,11 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
       <header className={styles.header}>
         <div className={styles.logo}>Logo</div>
         <div className={styles.search}>
-          <input 
-            type="text" 
-            placeholder="Search Friends" 
-            onChange={(e) => setSearchQuery(e.target.value)} 
+          <input
+            type="text"
+            placeholder="Search Friends"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
           />
         </div>
         <div className={styles.icons}>
@@ -71,7 +78,7 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
             {dropdownVisible && (
               <div className={styles.dropdown}>
                 <ul>
-                  <li onClick={onProfileClick}>Profile</li> {/* Updated this */}
+                  <li onClick={onProfileClick}>Profile</li>
                   <li>Settings</li>
                   <li onClick={handleLogout}>Logout</li>
                 </ul>

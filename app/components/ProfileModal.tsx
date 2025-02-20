@@ -58,11 +58,11 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
         {user?.bio && <p><strong>Bio:</strong> {user.bio}</p>}
         {user?.profilePicture && (
           <Image
-          src={user.profilePicture}
-          alt="Profile"
-          width={150}
-          height={150}
-          className={styles.profilePicture}
+            src={user.profilePicture}
+            alt="Profile"
+            width={150}
+            height={150}
+            className={styles.profilePicture}
           />
         )}
         <button onClick={onClose}>Close</button>

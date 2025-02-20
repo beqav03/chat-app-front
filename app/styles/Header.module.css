@@ -96,4 +96,27 @@
   .dropdown li:hover {
     background-color: #f1f1f1;
   }
+
+  .search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
   
+  .search input {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 350px;
+  }
+  
+  .searchIcon {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .searchIcon:hover {
+    opacity: 0.8;
+  }
