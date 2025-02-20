@@ -49,7 +49,7 @@ const AuthPage: React.FC = () => {
       if (responseData.token) {
         localStorage.setItem("token", responseData.token);
         console.log("Token saved:", responseData.token);
-        setIsAuthenticated(true);
+        setIsAuthenticated(true); // ✅ Redirects user to the main app
       } else {
         console.error("No token received from backend.");
       }
