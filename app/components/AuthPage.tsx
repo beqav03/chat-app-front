@@ -45,18 +45,22 @@ const AuthPage: React.FC = () => {
       }
   
       const responseData = await response.json();
+      console.log("Response Data:", responseData);
   
-      if (responseData.token) {
+      if (isRegistering) {
+        alert("Registration successful! Please log in.");
+        setIsRegistering(false);
+      } else if (responseData.token) {
         localStorage.setItem("token", responseData.token);
         console.log("Token saved:", responseData.token);
-        setIsAuthenticated(true); // ✅ Redirects user to the main app
+        setIsAuthenticated(true);
       } else {
         console.error("No token received from backend.");
       }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "An unknown error occurred");
     }
-  };
+  };  
 
   const handleLogout = (): void => {
     localStorage.removeItem("token");
