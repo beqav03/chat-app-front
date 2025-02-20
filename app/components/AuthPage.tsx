@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import styles from "../styles/auth.module.css";
 import MainApp from "./MainApp";
 import { fetchWithAuth } from "../utils/api";
+import Notification from "./Notification";
 
 const AuthPage: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -10,6 +11,7 @@ const AuthPage: React.FC = () => {
   const [formData, setFormData] = useState({ name: "", email: "", password: "", confirmPassword: "" });
   const [error, setError] = useState<string>("");
   const [passwordStrength, setPasswordStrength] = useState<string>("");
+  const [showSuccess, setShowSuccess] = useState<boolean>(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -48,8 +50,11 @@ const AuthPage: React.FC = () => {
       console.log("Response Data:", responseData);
   
       if (isRegistering) {
-        alert("Registration successful! Please log in.");
-        setIsRegistering(false);
+        setShowSuccess(true);
+        setTimeout(() => {
+          setShowSuccess(false);
+          setIsRegistering(false);
+        }, 5000);
       } else if (responseData.token) {
         localStorage.setItem("token", responseData.token);
         console.log("Token saved:", responseData.token);
@@ -73,6 +78,13 @@ const AuthPage: React.FC = () => {
 
   return (
     <div className={styles.authContainer}>
+      {showSuccess && (
+        <Notification
+          message="Registration successful! Please log in."
+          type="success"
+          onClose={() => setShowSuccess(false)}
+        />
+      )}
       <div className={styles.authBox}>
         <h2>{isRegistering ? "Register" : "Login"}</h2>
         {error && <p className={styles.error}>{error}</p>}
