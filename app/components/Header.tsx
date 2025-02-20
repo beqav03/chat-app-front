@@ -45,7 +45,7 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
   
   const handleSearch = async () => {
     if (!searchInput.trim()) return;
-  
+    setSearchQuery(searchInput);
     try {
       const response = await fetchWithAuth(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/search?query=${searchInput}`);
       if (!response || !response.ok) throw new Error("Failed to fetch user");
