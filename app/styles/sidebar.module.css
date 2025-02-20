@@ -3,55 +3,56 @@
     background-color: #fff;
     padding: 20px;
     border-right: 1px solid #ddd;
-}
-
-.sidebar h2 {
+    transition: width 0.3s ease; /* Smooth transition for collapsing */
+  }
+  
+  .sidebar h2 {
     margin-bottom: 10px;
-}
-
-.sidebar ul {
+  }
+  
+  .sidebar ul {
     list-style: none;
     padding-left: 0;
-}
-
-.sidebar li {
+  }
+  
+  .sidebar li {
     padding: 8px;
     cursor: pointer;
     border-radius: 4px;
     height: 60px;
     background-color: #cfcfcf;
-}
-
-.sidebar li:hover {
+  }
+  
+  .sidebar li:hover {
     background-color: #f0f0f0;
-}
-
-.friendList {
+  }
+  
+  .friendList {
     list-style-type: none;
     padding: 0;
-}
+  }
   
-.friendItem {
+  .friendItem {
     display: flex;
     align-items: center;
     margin-bottom: 1rem;
     padding: 0px;
-}
+  }
   
-.friendPhotoContainer {
+  .friendPhotoContainer {
     position: relative;
     margin-right: 1rem;
-}
+  }
   
-.friendPhoto {
+  .friendPhoto {
     width: 60px;
     height: 30px;
     border-radius: 3px;
     object-fit: cover;
     border: 2px solid #fff;
-}
+  }
   
-.statusIndicator {
+  .statusIndicator {
     position: absolute;
     bottom: 0;
     right: 0;
@@ -59,17 +60,36 @@
     height: 10px;
     border-radius: 50%;
     border: 2px solid #fff;
-}
+  }
   
-.active {
+  .active {
     background-color: #4caf50; /* Green for active */
-}
+  }
   
-.inactive {
+  .inactive {
     background-color: #ccc; /* Gray for inactive */
-}
+  }
   
-.friendName {
+  .friendName {
     font-size: 1rem;
     font-weight: 400;
-}
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .sidebar {
+      width: 100%; /* Full width on mobile */
+      border-right: none;
+      border-bottom: 1px solid #ddd;
+    }
+  
+    .friendItem {
+      flex-direction: column; /* Stack friend items vertically on mobile */
+      align-items: flex-start;
+    }
+  
+    .friendPhotoContainer {
+      margin-right: 0;
+      margin-bottom: 10px;
+    }
+  }
