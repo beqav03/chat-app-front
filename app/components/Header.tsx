@@ -10,7 +10,7 @@ import { fetchWithAuth } from "../utils/api";
 interface HeaderProps {
   onLogout: () => void;
   setSearchQuery: (query: string) => void;
-  onProfileClick?: () => void; // Added this
+  onProfileClick?: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClick }) => {
@@ -55,6 +55,9 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
           />
+          <span className={styles.searchIcon} onClick={handleSearch}>
+            <Image src={MagnifyingGlass} alt="Search" width={20} height={20} />
+          </span>
         </div>
         <div className={styles.icons}>
           <span className={styles.icon} onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}>
