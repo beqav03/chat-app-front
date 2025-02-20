@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import styles from "../styles/Header.module.css";
 import BellIcon from "../icons/bell.svg";
 import BurgerMenu from "../icons/menuburger.svg";
-import MagnifyingGlass from "../icons/magnifying-glass.svg"; // Import the magnifying glass icon
+import MagnifyingGlass from "../icons/magnifying-glass.svg";
 import Image from "next/image";
 import { fetchWithAuth } from "../utils/api";
 
@@ -13,11 +13,18 @@ interface HeaderProps {
   onProfileClick?: () => void;
 }
 
+interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
 const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClick }) => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [notifications, setNotifications] = useState<string[]>([]);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [searchInput, setSearchInput] = useState("");
+  const [searchResults, setSearchResults] = useState<User[]>([]);
 
   const handleLogout = async () => {
     await fetchWithAuth("/auth/logout", { method: "POST" });
@@ -36,8 +43,20 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
     }
   };
 
-  const handleSearch = () => {
-    setSearchQuery(searchInput);
+  const handleSearch = async () => {
+    if (!searchInput.trim()) return;
+
+    try {
+      const response:any = await fetchWithAuth(`${process.env.NEXT_PUBLIC_BACKEND_URL}/users/search?query=${searchInput}`);
+      if (!response.ok) throw new Error("Failed to fetch users");
+
+      const data = await response.json();
+      setSearchResults(data);
+      console.log("Search results:", data);
+    } catch (error) {
+      console.error("Error searching users:", error);
+      setSearchResults([]);
+    }
   };
 
   useEffect(() => {
@@ -90,6 +109,17 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
           </span>
         </div>
       </header>
+      {searchResults.length > 0 && (
+        <div className={styles.searchResults}>
+          <ul>
+            {searchResults.map((user) => (
+              <li key={user.id}>
+                <span>{user.name}</span> - <span>{user.email}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </>
   );
 };
