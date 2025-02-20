@@ -42,14 +42,14 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
       console.error("Error fetching notifications:", error);
     }
   };
-
+  
   const handleSearch = async () => {
     if (!searchInput.trim()) return;
-
+  
     try {
-      const response:any = await fetchWithAuth(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/search?query=${searchInput}`);
-      if (!response.ok) throw new Error("Failed to fetch user");
-
+      const response = await fetchWithAuth(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/search?query=${searchInput}`);
+      if (!response || !response.ok) throw new Error("Failed to fetch user");
+  
       const data = await response.json();
       setSearchResults(data);
       console.log("Search results:", data);
@@ -57,7 +57,7 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
       console.error("Error searching users:", error);
       setSearchResults([]);
     }
-  };
+  };  
 
   useEffect(() => {
     fetchNotifications();
