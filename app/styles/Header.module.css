@@ -134,3 +134,54 @@
 .addFriendButton:hover {
   background-color: #45a049;
 }
+
+/* Add these styles to your Header.module.css */
+.searchResults {
+  position: absolute;
+  top: 60px; /* Adjust based on your header height */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  width: 300px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.searchResults ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.searchResults li {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.searchResults li:last-child {
+  border-bottom: none;
+}
+
+.searchResults button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.searchResults button:hover {
+  background-color: #0056b3;
+}

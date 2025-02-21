@@ -14,9 +14,8 @@ interface HeaderProps {
 }
 
 interface User {
-  id: number;
-  firstName: string;
-  lastName: string;
+  name: string;
+  lastname: string;
   email: string;
 }
 
@@ -43,14 +42,14 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
       console.error("Error fetching notifications:", error);
     }
   };
-  
+
   const handleSearch = async () => {
     if (!searchInput.trim()) return;
     setSearchQuery(searchInput);
     try {
-      const response = await fetchWithAuth(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/search?query=${searchInput}`);
+      const response = await fetchWithAuth(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/search?keyword=${searchInput}`);
       if (!response || !response.ok) throw new Error("Failed to fetch user");
-  
+
       const data = await response.json();
       setSearchResults(data);
       console.log("Search results:", data);
@@ -58,22 +57,19 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
       console.error("Error searching users:", error);
       setSearchResults([]);
     }
-  };  
+  };
 
-  const handleAddFriend = async (userId: number) => {
+  const sendFriendRequest = async (email: string) => {
     try {
       const response = await fetchWithAuth("/friends/request", {
         method: "POST",
-        body: JSON.stringify({ userId }),
+        body: JSON.stringify({ email }),
       });
-
-      if (!response || !response.ok) {
-        throw new Error("Failed to send friend request");
-      }
-
-      console.log("Friend request sent successfully");
+      if (!response || !response.ok) throw new Error("Failed to send friend request");
+      alert("Friend request sent successfully!");
     } catch (error) {
       console.error("Error sending friend request:", error);
+      alert("Failed to send friend request");
     }
   };
 
@@ -130,15 +126,10 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
       {searchResults.length > 0 && (
         <div className={styles.searchResults}>
           <ul>
-            {searchResults.map((user) => (
-              <li key={user.id}>
-                <span>{user.firstName} {user.lastName}</span> - <span>{user.email}</span>
-                <button 
-                  className={styles.addFriendButton} 
-                  onClick={() => handleAddFriend(user.id)}
-                >
-                  +
-                </button>
+            {searchResults.map((user, index) => (
+              <li key={index}>
+                <span>{user.name} {user.lastname}</span> - <span>{user.email}</span>
+                <button onClick={() => sendFriendRequest(user.email)}>+</button>
               </li>
             ))}
           </ul>
