@@ -15,7 +15,8 @@ interface HeaderProps {
 
 interface User {
   id: number;
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
 }
 
@@ -47,7 +48,7 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
     if (!searchInput.trim()) return;
     setSearchQuery(searchInput);
     try {
-      const response = await fetchWithAuth(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/search?keyword=${searchInput}`);
+      const response = await fetchWithAuth(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/search?query=${searchInput}`);
       if (!response || !response.ok) throw new Error("Failed to fetch user");
   
       const data = await response.json();
@@ -56,6 +57,23 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
     } catch (error) {
       console.error("Error searching users:", error);
       setSearchResults([]);
+    }
+  };  
+
+  const handleAddFriend = async (userId: number) => {
+    try {
+      const response = await fetchWithAuth("/friends/request", {
+        method: "POST",
+        body: JSON.stringify({ userId }),
+      });
+
+      if (!response || !response.ok) {
+        throw new Error("Failed to send friend request");
+      }
+
+      console.log("Friend request sent successfully");
+    } catch (error) {
+      console.error("Error sending friend request:", error);
     }
   };
 
@@ -114,7 +132,13 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
           <ul>
             {searchResults.map((user) => (
               <li key={user.id}>
-                <span>{user.name}</span> - <span>{user.email}</span>
+                <span>{user.firstName} {user.lastName}</span> - <span>{user.email}</span>
+                <button 
+                  className={styles.addFriendButton} 
+                  onClick={() => handleAddFriend(user.id)}
+                >
+                  +
+                </button>
               </li>
             ))}
           </ul>
