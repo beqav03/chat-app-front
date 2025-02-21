@@ -25,6 +25,7 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [searchInput, setSearchInput] = useState("");
   const [searchResults, setSearchResults] = useState<User[]>([]);
+  const [isSearchResultsVisible, setIsSearchResultsVisible] = useState(false);
 
   const handleLogout = async () => {
     await fetchWithAuth("/auth/logout", { method: "POST" });
@@ -52,6 +53,7 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
 
       const data = await response.json();
       setSearchResults(data);
+      setIsSearchResultsVisible(true);
       console.log("Search results:", data);
     } catch (error) {
       console.error("Error searching users:", error);
@@ -73,6 +75,10 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
     }
   };
 
+  const toggleSearchResults = () => {
+    setIsSearchResultsVisible((prev) => !prev);
+  };
+
   useEffect(() => {
     fetchNotifications();
   }, []);
@@ -91,6 +97,9 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
           <span className={styles.searchIcon} onClick={handleSearch}>
             <Image src={MagnifyingGlass} alt="Search" width={20} height={20} />
           </span>
+          <button className={styles.collapseButton} onClick={toggleSearchResults}>
+            {isSearchResultsVisible ? "▲" : "▼"}
+          </button>
         </div>
         <div className={styles.icons}>
           <span className={styles.icon} onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}>
@@ -123,7 +132,7 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
           </span>
         </div>
       </header>
-      {searchResults.length > 0 && (
+      {isSearchResultsVisible && searchResults.length > 0 && (
         <div className={styles.searchResults}>
           <ul>
             {searchResults.map((user, index) => (
