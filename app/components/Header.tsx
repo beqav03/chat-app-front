@@ -4,6 +4,8 @@ import styles from "../styles/Header.module.css";
 import BellIcon from "../icons/bell.svg";
 import BurgerMenu from "../icons/menuburger.svg";
 import MagnifyingGlass from "../icons/magnifying-glass.svg";
+import Logo from "../icons/chat.svg";
+import Close from "../icons/close.svg";
 import Image from "next/image";
 import { fetchWithAuth } from "../utils/api";
 
@@ -25,7 +27,7 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [searchInput, setSearchInput] = useState("");
   const [searchResults, setSearchResults] = useState<User[]>([]);
-  const [isSearchResultsVisible, setIsSearchResultsVisible] = useState(false);
+  const [isSearchResultsVisible, setIsSearchResultsVisible] = useState(false); // State to control dropdown visibility
 
   const handleLogout = async () => {
     await fetchWithAuth("/auth/logout", { method: "POST" });
@@ -53,7 +55,7 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
 
       const data = await response.json();
       setSearchResults(data);
-      setIsSearchResultsVisible(true);
+      setIsSearchResultsVisible(true); // Show the dropdown when search results are fetched
       console.log("Search results:", data);
     } catch (error) {
       console.error("Error searching users:", error);
@@ -75,8 +77,8 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
     }
   };
 
-  const toggleSearchResults = () => {
-    setIsSearchResultsVisible((prev) => !prev);
+  const closeSearchResults = () => {
+    setIsSearchResultsVisible(false);
   };
 
   useEffect(() => {
@@ -86,7 +88,9 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
   return (
     <>
       <header className={styles.header}>
-        <div className={styles.logo}>Logo</div>
+        <div className={styles.logo}>
+          <Image src={Logo} alt="Search" width={20} height={20} />
+        </div>
         <div className={styles.search}>
           <input
             type="text"
@@ -97,9 +101,6 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
           <span className={styles.searchIcon} onClick={handleSearch}>
             <Image src={MagnifyingGlass} alt="Search" width={20} height={20} />
           </span>
-          <button className={styles.collapseButton} onClick={toggleSearchResults}>
-            {isSearchResultsVisible ? "▲" : "▼"}
-          </button>
         </div>
         <div className={styles.icons}>
           <span className={styles.icon} onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}>
@@ -134,6 +135,9 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
       </header>
       {isSearchResultsVisible && searchResults.length > 0 && (
         <div className={styles.searchResults}>
+          <button className={styles.closeButton} onClick={closeSearchResults}>
+            <Image src={Close} alt="Close" width={16} height={16} />
+          </button>
           <ul>
             {searchResults.map((user, index) => (
               <li key={index}>
