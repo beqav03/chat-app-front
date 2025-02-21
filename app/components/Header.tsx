@@ -47,7 +47,7 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
     if (!searchInput.trim()) return;
     setSearchQuery(searchInput);
     try {
-      const response = await fetchWithAuth(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/search?query=${searchInput}`);
+      const response = await fetchWithAuth(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/search?keyword=${searchInput}`);
       if (!response || !response.ok) throw new Error("Failed to fetch user");
   
       const data = await response.json();
@@ -57,7 +57,7 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
       console.error("Error searching users:", error);
       setSearchResults([]);
     }
-  };  
+  };
 
   useEffect(() => {
     fetchNotifications();
