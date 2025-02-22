@@ -15,16 +15,17 @@ interface MainAppProps {
 interface Friend {
   id: number;
   name: string;
+  lastname: string;
   photo: string;
-  active: boolean;
+  status: "pending" | "accepted" | "rejected";
 }
 
 const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
   const [friends, setFriends] = useState<Friend[]>([]);
   const [socket, setSocket] = useState<Socket | null>(null);
   const [error, setError] = useState("");
-  const [isProfileOpen, setIsProfileOpen] = useState(false); // State to toggle ProfileModal
-  const [searchQuery, setSearchQuery] = useState(""); // ✅ Added this
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
 
   const fetchFriends = useCallback(async () => {
@@ -68,7 +69,7 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
       setFriends((prevFriends) =>
         prevFriends.map((friend) =>
           friend.id === updatedFriend.id
-            ? { ...friend, active: updatedFriend.active }
+            ? { ...friend, status: updatedFriend.status }
             : friend
         )
       );
@@ -84,11 +85,11 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
 
   return (
     <div className={styles.mainApp}>
-      <Header onLogout={onLogout} onProfileClick={() => setIsProfileOpen(true)} setSearchQuery={setSearchQuery} /> {/* ✅ Fixed: Passed setSearchQuery */}
+      <Header onLogout={onLogout} onProfileClick={() => setIsProfileOpen(true)} setSearchQuery={setSearchQuery} />
       {error && <div className={styles.error}>{error}</div>}
       <div className={styles.content}>
-      <Sidebar friends={friends} searchQuery={searchQuery} /> {/* ✅ Fixed: Passed searchQuery */}
-      {socket && <ChatSection socket={socket} />}
+        <Sidebar friends={friends} searchQuery={searchQuery} />
+        {socket && <ChatSection socket={socket} />}
       </div>
       {isProfileOpen && (
         <ProfileModal onClose={() => setIsProfileOpen(false)} />

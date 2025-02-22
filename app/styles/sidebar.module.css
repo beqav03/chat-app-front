@@ -27,31 +27,6 @@
     background-color: #f0f0f0;
   }
   
-  .friendList {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .friendItem {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1rem;
-    padding: 0px;
-  }
-  
-  .friendPhotoContainer {
-    position: relative;
-    margin-right: 1rem;
-  }
-  
-  .friendPhoto {
-    width: 60px;
-    height: 30px;
-    border-radius: 3px;
-    object-fit: cover;
-    border: 2px solid #fff;
-  }
-  
   .statusIndicator {
     position: absolute;
     bottom: 0;
@@ -92,4 +67,76 @@
       margin-right: 0;
       margin-bottom: 10px;
     }
+  }
+  
+  .friendList {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .friendItem {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+  }
+  
+  .friendPhotoContainer {
+    position: relative;
+    margin-right: 1rem;
+  }
+  
+  .friendPhoto {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  .statusIndicator {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+  }
+  
+  .active {
+    background-color: #4caf50; /* Green for active */
+  }
+  
+  .inactive {
+    background-color: #ccc; /* Gray for inactive */
+  }
+  
+  .friendName {
+    font-size: 1rem;
+    font-weight: 400;
+  }
+  
+  .friendActions {
+    display: flex;
+    gap: 10px;
+    margin-left: auto;
+  }
+  
+  .friendActions button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .friendActions button:first-child {
+    background-color: #4caf50;
+    color: white;
+  }
+  
+  .friendActions button:last-child {
+    background-color: #f44336;
+    color: white;
   }

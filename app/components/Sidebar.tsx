@@ -2,12 +2,14 @@
 import React from "react";
 import styles from "../styles/sidebar.module.css";
 import Image from "next/image";
+import { fetchWithAuth } from "../utils/api";
 
 interface Friend {
   id: number;
   name: string;
+  lastname: string;
   photo: string;
-  active: boolean;
+  status: "pending" | "accepted" | "rejected";
 }
 
 interface SidebarProps {
@@ -20,6 +22,30 @@ const Sidebar: React.FC<SidebarProps> = ({ friends, searchQuery }) => {
     friend.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const handleAcceptFriendRequest = async (requestId: number) => {
+    try {
+      const response = await fetchWithAuth(`/friends/accept/${requestId}`, {
+        method: "POST",
+      });
+      if (!response || !response.ok) throw new Error("Failed to accept friend request");
+      // You can refetch friends or update the state here
+    } catch (error) {
+      console.error("Error accepting friend request:", error);
+    }
+  };
+
+  const handleRejectFriendRequest = async (requestId: number) => {
+    try {
+      const response = await fetchWithAuth(`/friends/reject/${requestId}`, {
+        method: "POST",
+      });
+      if (!response || !response.ok) throw new Error("Failed to reject friend request");
+      // You can refetch friends or update the state here
+    } catch (error) {
+      console.error("Error rejecting friend request:", error);
+    }
+  };
+
   return (
     <aside className={styles.sidebar}>
       <h2>Friends</h2>
@@ -28,9 +54,15 @@ const Sidebar: React.FC<SidebarProps> = ({ friends, searchQuery }) => {
           <li key={friend.id} className={styles.friendItem}>
             <div className={styles.friendPhotoContainer}>
               <Image src={friend.photo} alt={friend.name} width={50} height={50} className={styles.friendPhoto} />
-              <div className={`${styles.statusIndicator} ${friend.active ? styles.active : styles.inactive}`}></div>
+              <div className={`${styles.statusIndicator} ${friend.status === "accepted" ? styles.active : styles.inactive}`}></div>
             </div>
-            <span className={styles.friendName}>{friend.name}</span>
+            <span className={styles.friendName}>{friend.name} {friend.lastname}</span>
+            {friend.status === "pending" && (
+              <div className={styles.friendActions}>
+                <button onClick={() => handleAcceptFriendRequest(friend.id)}>Accept</button>
+                <button onClick={() => handleRejectFriendRequest(friend.id)}>Reject</button>
+              </div>
+            )}
           </li>
         ))}
       </ul>

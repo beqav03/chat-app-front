@@ -16,6 +16,7 @@ interface HeaderProps {
 }
 
 interface User {
+  id: number;
   name: string;
   lastname: string;
   email: string;
@@ -27,7 +28,8 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [searchInput, setSearchInput] = useState("");
   const [searchResults, setSearchResults] = useState<User[]>([]);
-  const [isSearchResultsVisible, setIsSearchResultsVisible] = useState(false); // State to control dropdown visibility
+  const [isSearchResultsVisible, setIsSearchResultsVisible] = useState(false);
+  const [requestSent, setRequestSent] = useState(false); // State for request sent notification
 
   const handleLogout = async () => {
     await fetchWithAuth("/auth/logout", { method: "POST" });
@@ -55,22 +57,21 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
 
       const data = await response.json();
       setSearchResults(data);
-      setIsSearchResultsVisible(true); // Show the dropdown when search results are fetched
-      console.log("Search results:", data);
+      setIsSearchResultsVisible(true);
     } catch (error) {
       console.error("Error searching users:", error);
       setSearchResults([]);
     }
   };
 
-  const sendFriendRequest = async (email: string) => {
+  const sendFriendRequest = async (receiverId: number) => {
     try {
-      const response = await fetchWithAuth("/friends/request", {
+      const response = await fetchWithAuth(`/friends/request/${receiverId}`, {
         method: "POST",
-        body: JSON.stringify({ email }),
       });
       if (!response || !response.ok) throw new Error("Failed to send friend request");
-      alert("Friend request sent successfully!");
+      setRequestSent(true); // Show notification
+      setTimeout(() => setRequestSent(false), 3000); // Hide notification after 3 seconds
     } catch (error) {
       console.error("Error sending friend request:", error);
       alert("Failed to send friend request");
@@ -142,12 +143,13 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
             {searchResults.map((user, index) => (
               <li key={index}>
                 <span>{user.name} {user.lastname}</span> - <span>{user.email}</span>
-                <button onClick={() => sendFriendRequest(user.email)}>+</button>
+                <button onClick={() => sendFriendRequest(user.id)}>+</button>
               </li>
             ))}
           </ul>
         </div>
       )}
+      {requestSent && <div className={styles.notification}>Friend request sent successfully!</div>}
     </>
   );
 };
