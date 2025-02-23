@@ -26,20 +26,7 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
   const [error, setError] = useState("");
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [userId, setUserId] = useState<number | null>(null); // Add userId state
   const router = useRouter();
-
-  const fetchUserId = useCallback(async () => {
-    try {
-      const response = await fetchWithAuth("/me");
-      if (!response || !response.ok) throw new Error("Failed to fetch user ID");
-      const data = await response.json();
-      setUserId(data.id);
-    } catch (error) {
-      console.error("Error fetching user ID:", error);
-      setError("Failed to fetch user ID");
-    }
-  }, []);
 
   const fetchFriends = useCallback(async () => {
     try {
@@ -60,7 +47,6 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
       return;
     }
 
-    fetchUserId();
     fetchFriends();
 
     const newSocket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}/socket.io`, {
@@ -95,16 +81,14 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
       newSocket.off("friend_status");
       newSocket.disconnect();
     };
-  }, [router, fetchFriends, fetchUserId]);
+  }, [router, fetchFriends]);
 
   return (
     <div className={styles.mainApp}>
       <Header onLogout={onLogout} onProfileClick={() => setIsProfileOpen(true)} setSearchQuery={setSearchQuery} />
       {error && <div className={styles.error}>{error}</div>}
       <div className={styles.content}>
-        {userId && (
-          <Sidebar friends={friends} searchQuery={searchQuery} userId={userId} />
-        )}
+        <Sidebar friends={friends} searchQuery={searchQuery} />
         {socket && <ChatSection socket={socket} />}
       </div>
       {isProfileOpen && (

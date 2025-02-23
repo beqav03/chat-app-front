@@ -18,8 +18,8 @@ interface SidebarProps {
   friends: Friend[];
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ searchQuery, userId, friends }) => {
-  const [filteredFriends, setFilteredFriends] = useState<Friend[]>([]);
+const Sidebar: React.FC<SidebarProps> = ({ searchQuery, userId }) => {
+  const [friends, setFriends] = useState<Friend[]>([]);
 
   useEffect(() => {
     const fetchFriends = async () => {
@@ -27,7 +27,7 @@ const Sidebar: React.FC<SidebarProps> = ({ searchQuery, userId, friends }) => {
         const response = await fetchWithAuth(`/friends/${userId}`);
         if (!response || !response.ok) throw new Error("Failed to fetch friends");
         const data = await response.json();
-        setFilteredFriends(data);
+        setFriends(data);
       } catch (error) {
         console.error("Error fetching friends:", error);
       }
@@ -35,6 +35,10 @@ const Sidebar: React.FC<SidebarProps> = ({ searchQuery, userId, friends }) => {
 
     fetchFriends();
   }, [userId]);
+
+  const filteredFriends = friends.filter((friend) =>
+    friend.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const handleAcceptFriendRequest = async (requestId: number) => {
     try {
