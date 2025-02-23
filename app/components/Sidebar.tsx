@@ -15,6 +15,7 @@ interface Friend {
 interface SidebarProps {
   searchQuery: string;
   userId: number;
+  friends: Friend[];
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ searchQuery, userId }) => {
