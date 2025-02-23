@@ -27,7 +27,16 @@ const Sidebar: React.FC<SidebarProps> = ({ userId }) => {
         const response = await fetchWithAuth(`/friends/${userId}`);
         if (!response || !response.ok) throw new Error("Failed to fetch friends");
         const data = await response.json();
-        setFilteredFriends(data);
+
+        const mappedFriends = data.map((friend: any) => ({
+          id: friend.friend_id,
+          name: friend.user_name,
+          lastname: friend.user_lastname,
+          photo: "https://via.placeholder.com/50",
+          status: "pending",
+        }));
+
+        setFilteredFriends(mappedFriends);
       } catch (error) {
         console.error("Error fetching friends:", error);
       }
@@ -103,23 +112,6 @@ const Sidebar: React.FC<SidebarProps> = ({ userId }) => {
                   onClick={() => handleRejectFriendRequest(friend.id)}
                 >
                   ❌ Reject
-                </button>
-              </div>
-            )}
-
-            {friend.status === "pending" && (
-              <div className={styles.friendActions}>
-                <button
-                  className={styles.confirmFundingButton}
-                  onClick={() => handleAcceptFriendRequest(friend.id)}
-                >
-                  ✅ Confirm Funding
-                </button>
-                <button
-                  className={styles.rejectFundingButton}
-                  onClick={() => handleRejectFriendRequest(friend.id)}
-                >
-                  ❌ Reject Funding
                 </button>
               </div>
             )}
