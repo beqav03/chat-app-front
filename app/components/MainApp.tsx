@@ -20,13 +20,36 @@ interface Friend {
   status: "pending" | "accepted" | "rejected";
 }
 
+interface UserProfile {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  profilePicture?: string;
+  bio?: string;
+}
+
 const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
   const [friends, setFriends] = useState<Friend[]>([]);
   const [socket, setSocket] = useState<Socket | null>(null);
   const [error, setError] = useState("");
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [userId, setUserId] = useState<number | null>(null);
   const router = useRouter();
+
+  const fetchUserProfile = useCallback(async () => {
+    try {
+      const response = await fetchWithAuth("/profile");
+      if (!response) throw new Error("Unauthorized");
+      if (!response.ok) throw new Error("Failed to fetch profile");
+      const data: UserProfile = await response.json();
+      setUserId(data.id);
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+      setError("Failed to load profile");
+    }
+  }, []);
 
   const fetchFriends = useCallback(async () => {
     try {
@@ -47,6 +70,7 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
       return;
     }
 
+    fetchUserProfile();
     fetchFriends();
 
     const newSocket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}/socket.io`, {
@@ -81,14 +105,14 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
       newSocket.off("friend_status");
       newSocket.disconnect();
     };
-  }, [router, fetchFriends]);
+  }, [router, fetchFriends, fetchUserProfile]);
 
   return (
     <div className={styles.mainApp}>
       <Header onLogout={onLogout} onProfileClick={() => setIsProfileOpen(true)} setSearchQuery={setSearchQuery} />
       {error && <div className={styles.error}>{error}</div>}
       <div className={styles.content}>
-        <Sidebar friends={friends} searchQuery={searchQuery} />
+        {userId && <Sidebar friends={friends} searchQuery={searchQuery} userId={userId} />}
         {socket && <ChatSection socket={socket} />}
       </div>
       {isProfileOpen && (
