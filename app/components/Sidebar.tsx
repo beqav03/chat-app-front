@@ -42,6 +42,12 @@ import { fetchWithAuth } from "../utils/api";
         method: "POST",
       });
       if (!response || !response.ok) throw new Error("Failed to accept friend request");
+
+      setFilteredFriends((prevFriends) =>
+        prevFriends.map((friend) =>
+          friend.id === requestId ? { ...friend, status: "accepted" } : friend
+        )
+      );
     } catch (error) {
       console.error("Error accepting friend request:", error);
     }
@@ -53,6 +59,12 @@ import { fetchWithAuth } from "../utils/api";
         method: "POST",
       });
       if (!response || !response.ok) throw new Error("Failed to reject friend request");
+
+      setFilteredFriends((prevFriends) =>
+        prevFriends.map((friend) =>
+          friend.id === requestId ? { ...friend, status: "rejected" } : friend
+        )
+      );
     } catch (error) {
       console.error("Error rejecting friend request:", error);
     }
@@ -65,15 +77,36 @@ import { fetchWithAuth } from "../utils/api";
         {filteredFriends.map((friend) => (
           <li key={friend.id} className={styles.friendItem}>
             <div className={styles.friendPhotoContainer}>
-              <Image src={friend.photo} alt={friend.name} width={50} height={50} className={styles.friendPhoto} />
-              <div className={`${styles.statusIndicator} ${friend.status === "accepted" ? styles.active : styles.inactive}`}></div>
+              <Image
+                src={friend.photo}
+                alt={friend.name}
+                width={50}
+                height={50}
+                className={styles.friendPhoto}
+              />
+              <div
+                className={`${styles.statusIndicator} ${
+                  friend.status === "accepted"
+                    ? styles.active
+                    : friend.status === "pending"
+                    ? styles.pending
+                    : styles.inactive
+                }`}
+              ></div>
             </div>
-            <span className={styles.friendName}>{friend.name} {friend.lastname}</span>
+
+            <span className={styles.friendName}>
+              {friend.name} {friend.lastname}
+            </span>
+
             {friend.status === "pending" && (
-              <div className={styles.friendActions}>
-                <button onClick={() => handleAcceptFriendRequest(friend.id)}>Accept</button>
-                <button onClick={() => handleRejectFriendRequest(friend.id)}>Reject</button>
-              </div>
+              <>
+                <span className={styles.pendingIcon}>⏳</span> {/* Pending Indicator */}
+                <div className={styles.friendActions}>
+                  <button onClick={() => handleAcceptFriendRequest(friend.id)}>Accept</button>
+                  <button onClick={() => handleRejectFriendRequest(friend.id)}>Reject</button>
+                </div>
+              </>
             )}
           </li>
         ))}
