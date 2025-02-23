@@ -106,6 +106,23 @@ const Sidebar: React.FC<SidebarProps> = ({ userId }) => {
                 </button>
               </div>
             )}
+
+            {friend.status === "pending" && (
+              <div className={styles.friendActions}>
+                <button
+                  className={styles.confirmFundingButton}
+                  onClick={() => handleAcceptFriendRequest(friend.id)}
+                >
+                  ✅ Confirm Funding
+                </button>
+                <button
+                  className={styles.rejectFundingButton}
+                  onClick={() => handleRejectFriendRequest(friend.id)}
+                >
+                  ❌ Reject Funding
+                </button>
+              </div>
+            )}
           </li>
         ))}
       </ul>
