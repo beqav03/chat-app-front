@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import styles from "../styles/sidebar.module.css";
 import Image from "next/image";
 import { fetchWithAuth } from "../utils/api";
@@ -13,29 +13,11 @@ interface Friend {
 }
 
 interface SidebarProps {
-  searchQuery: string;
-  userId: number;
   friends: Friend[];
+  searchQuery: string;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ searchQuery, userId }) => {
-  const [friends, setFriends] = useState<Friend[]>([]);
-
-  useEffect(() => {
-    const fetchFriends = async () => {
-      try {
-        const response = await fetchWithAuth(`/friends/${userId}`);
-        if (!response || !response.ok) throw new Error("Failed to fetch friends");
-        const data = await response.json();
-        setFriends(data);
-      } catch (error) {
-        console.error("Error fetching friends:", error);
-      }
-    };
-
-    fetchFriends();
-  }, [userId]);
-
+const Sidebar: React.FC<SidebarProps> = ({ friends, searchQuery }) => {
   const filteredFriends = friends.filter((friend) =>
     friend.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -46,6 +28,7 @@ const Sidebar: React.FC<SidebarProps> = ({ searchQuery, userId }) => {
         method: "POST",
       });
       if (!response || !response.ok) throw new Error("Failed to accept friend request");
+      // You can refetch friends or update the state here
     } catch (error) {
       console.error("Error accepting friend request:", error);
     }
@@ -57,6 +40,7 @@ const Sidebar: React.FC<SidebarProps> = ({ searchQuery, userId }) => {
         method: "POST",
       });
       if (!response || !response.ok) throw new Error("Failed to reject friend request");
+      // You can refetch friends or update the state here
     } catch (error) {
       console.error("Error rejecting friend request:", error);
     }
