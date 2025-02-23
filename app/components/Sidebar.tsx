@@ -4,21 +4,21 @@ import styles from "../styles/sidebar.module.css";
 import Image from "next/image";
 import { fetchWithAuth } from "../utils/api";
 
-  interface Friend {
-    id: number;
-    name: string;
-    lastname: string;
-    photo: string;
-    status: "pending" | "accepted" | "rejected";
-  }
+interface Friend {
+  id: number;
+  name: string;
+  lastname: string;
+  photo: string;
+  status: "pending" | "accepted" | "rejected";
+}
 
-  interface SidebarProps {
-    friends: Friend[];
-    searchQuery: string;
-    userId: number;
-  }
+interface SidebarProps {
+  friends: Friend[];
+  searchQuery: string;
+  userId: number;
+}
 
-  const Sidebar: React.FC<SidebarProps> = ({ userId }) => {
+const Sidebar: React.FC<SidebarProps> = ({ userId }) => {
   const [filteredFriends, setFilteredFriends] = useState<Friend[]>([]);
 
   useEffect(() => {
@@ -84,15 +84,6 @@ import { fetchWithAuth } from "../utils/api";
                 height={50}
                 className={styles.friendPhoto}
               />
-              <div
-                className={`${styles.statusIndicator} ${
-                  friend.status === "accepted"
-                    ? styles.active
-                    : friend.status === "pending"
-                    ? styles.pending
-                    : styles.inactive
-                }`}
-              ></div>
             </div>
 
             <span className={styles.friendName}>
@@ -100,13 +91,20 @@ import { fetchWithAuth } from "../utils/api";
             </span>
 
             {friend.status === "pending" && (
-              <>
-                <span className={styles.pendingIcon}>⏳</span> {/* Pending Indicator */}
-                <div className={styles.friendActions}>
-                  <button onClick={() => handleAcceptFriendRequest(friend.id)}>Accept</button>
-                  <button onClick={() => handleRejectFriendRequest(friend.id)}>Reject</button>
-                </div>
-              </>
+              <div className={styles.friendActions}>
+                <button
+                  className={styles.acceptButton}
+                  onClick={() => handleAcceptFriendRequest(friend.id)}
+                >
+                  ✅ Accept
+                </button>
+                <button
+                  className={styles.rejectButton}
+                  onClick={() => handleRejectFriendRequest(friend.id)}
+                >
+                  ❌ Reject
+                </button>
+              </div>
             )}
           </li>
         ))}
