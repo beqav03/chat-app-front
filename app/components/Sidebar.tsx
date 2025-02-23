@@ -4,21 +4,21 @@ import styles from "../styles/sidebar.module.css";
 import Image from "next/image";
 import { fetchWithAuth } from "../utils/api";
 
-interface Friend {
-  id: number;
-  name: string;
-  lastname: string;
-  photo: string;
-  status: "pending" | "accepted" | "rejected";
-}
+  interface Friend {
+    id: number;
+    name: string;
+    lastname: string;
+    photo: string;
+    status: "pending" | "accepted" | "rejected";
+  }
 
-interface SidebarProps {
-  friends: Friend[];
-  searchQuery: string;
-  userId: number;
-}
+  interface SidebarProps {
+    friends: Friend[];
+    searchQuery: string;
+    userId: number;
+  }
 
-const Sidebar: React.FC<SidebarProps> = ({ friends, searchQuery, userId }) => {
+  const Sidebar: React.FC<SidebarProps> = ({ userId }) => {
   const [filteredFriends, setFilteredFriends] = useState<Friend[]>([]);
 
   useEffect(() => {
