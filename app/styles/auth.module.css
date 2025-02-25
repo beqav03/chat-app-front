@@ -16,7 +16,7 @@
   box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
   text-align: center;
   width: 100%;
-  max-width: 400px;
+  max-width: 426px;
   position: relative;
   z-index: 1;
 }
@@ -24,8 +24,8 @@
 .authBox::before {
   content: '';
   position: absolute;
-  width: 400px;
-  height: 400px;
+  width: 600px;
+  height: 600px;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -39,8 +39,8 @@
 .authBox::after {
   content: '';
   position: absolute;
-  width: 350px;
-  height: 350px;
+  width: 650px;
+  height: 650px;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
