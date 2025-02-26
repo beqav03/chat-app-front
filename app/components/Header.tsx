@@ -9,6 +9,7 @@ import Close from "../icons/close.svg";
 import Image from "next/image";
 import { fetchWithAuth } from "../utils/api";
 import DoveAnimation from "./DoveAnimation";
+import Notification from "./Notification";
 
 interface HeaderProps {
   onLogout: () => void;
@@ -62,6 +63,7 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
     } catch (error) {
       console.error("Error searching users:", error);
       setSearchResults([]);
+      setIsSearchResultsVisible(true); // Still show the "no results" message on error
     }
   };
 
@@ -147,22 +149,32 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
           </span>
         </div>
       </header>
-      {isSearchResultsVisible && searchResults.length > 0 && (
+      {isSearchResultsVisible && (
         <div className={styles.searchResults}>
           <button className={styles.closeButton} onClick={closeSearchResults}>
             <Image src={Close} alt="Close" width={16} height={16} />
           </button>
-          <ul>
-            {searchResults.map((user, index) => (
-              <li key={index}>
-                <span>{user.name} {user.lastname}</span> - <span>{user.email}</span>
-                <button onClick={() => sendFriendRequest(user.id)}>+</button>
-              </li>
-            ))}
-          </ul>
+          {searchResults.length > 0 ? (
+            <ul>
+              {searchResults.map((user, index) => (
+                <li key={index}>
+                  <span>{user.name} {user.lastname}</span> - <span>{user.email}</span>
+                  <button onClick={() => sendFriendRequest(user.id)}>+</button>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className={styles.noResults}>No one would bother to send a message</p>
+          )}
         </div>
       )}
-      {requestSent && <div className={styles.notification}>Friend request sent successfully!</div>}
+      {requestSent && (
+        <Notification
+          message="Friend request sent successfully!"
+          type="success"
+          onClose={() => setRequestSent(false)}
+        />
+      )}
     </>
   );
 };

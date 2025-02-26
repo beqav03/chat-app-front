@@ -188,13 +188,9 @@
   transform: scale(1.1);
 }
 
-.notification {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  padding: 12px 20px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #28a745, #34d058);
-  color: white;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+.noResults {
+  padding: 12px;
+  text-align: center;
+  color: #666;
+  font-size: 14px;
 }
