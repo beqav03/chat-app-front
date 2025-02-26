@@ -90,7 +90,7 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
     <>
       <header className={styles.header}>
         <div className={styles.logo}>
-          <Image src={Logo} alt="Search" width={20} height={20} />
+          <Image src={Logo} alt="Search" width={50} height={50} />
         </div>
         <div className={styles.search}>
           <input
