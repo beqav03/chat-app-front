@@ -164,7 +164,7 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
               ))}
             </ul>
           ) : (
-            <p className={styles.noResults}>No one would bother to send a message</p>
+            <p className={styles.noResults}>No one was found.</p>
           )}
         </div>
       )}
