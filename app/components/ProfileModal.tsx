@@ -41,8 +41,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
           bio: data.bio || "",
           profilePicture: data.profilePicture || "",
         });
-      } catch (error) {
-        console.error("Error fetching profile:", error);
+      } catch {
         setError("Failed to load profile");
       } finally {
         setIsLoading(false);
@@ -64,8 +63,8 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
         if (!response || !response.ok) throw new Error("Failed to update picture");
         const data = await response.json();
         setFormData((prev) => ({ ...prev, profilePicture: data.profilePicture }));
-        setUser((prev) => prev ? { ...prev, profilePicture: data.profilePicture } : null);
-      } catch (error) {
+        setUser((prev) => (prev ? { ...prev, profilePicture: data.profilePicture } : null));
+      } catch {
         setError("Failed to update picture");
       }
     }
@@ -78,9 +77,9 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
         body: JSON.stringify(formData),
       });
       if (!response || !response.ok) throw new Error("Failed to update profile");
-      setUser((prev) => prev ? { ...prev, ...formData } : null);
+      setUser((prev) => (prev ? { ...prev, ...formData } : null));
       setIsEditing(false);
-    } catch (error) {
+    } catch {
       setError("Failed to save profile");
     }
   };
@@ -93,7 +92,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
       });
       if (!response || !response.ok) throw new Error("Failed to change password");
       setShowChangePassword(false);
-    } catch (error) {
+    } catch {
       setError("Failed to change password");
     }
   };
@@ -106,8 +105,8 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
       });
       if (!response || !response.ok) throw new Error("Failed to change email");
       setShowChangeEmail(false);
-      setUser((prev) => prev ? { ...prev, email: emailData.newEmail } : null);
-    } catch (error) {
+      setUser((prev) => (prev ? { ...prev, email: emailData.newEmail } : null));
+    } catch {
       setError("Failed to change email");
     }
   };
