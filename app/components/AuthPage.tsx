@@ -4,6 +4,7 @@ import styles from "../styles/auth.module.css";
 import MainApp from "./MainApp";
 import { fetchWithAuth } from "../utils/api";
 import Notification from "./Notification";
+import LoadingSpinner from "./LoadingSpinner";
 
 const AuthPage: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -12,6 +13,7 @@ const AuthPage: React.FC = () => {
   const [error, setError] = useState<string>("");
   const [passwordStrength, setPasswordStrength] = useState<string>("");
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -32,23 +34,17 @@ const AuthPage: React.FC = () => {
   };
 
   const handleAuth = async (): Promise<void> => {
+    setIsLoading(true);
     try {
       const url = isRegistering
         ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/user/register`
         : `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`;
-  
       const response = await fetchWithAuth(url, {
         method: "POST",
         body: JSON.stringify(formData),
       });
-  
-      if (!response || !response.ok) {
-        throw new Error("Authentication failed.");
-      }
-  
+      if (!response || !response.ok) throw new Error("Authentication failed.");
       const responseData = await response.json();
-      console.log("Response Data:", responseData);
-  
       if (isRegistering) {
         setShowSuccess(true);
         setTimeout(() => {
@@ -57,15 +53,14 @@ const AuthPage: React.FC = () => {
         }, 5000);
       } else if (responseData.token) {
         localStorage.setItem("token", responseData.token);
-        console.log("Token saved:", responseData.token);
         setIsAuthenticated(true);
-      } else {
-        console.error("No token received from backend.");
       }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "An unknown error occurred");
+    } finally {
+      setIsLoading(false);
     }
-  };  
+  };
 
   const handleLogout = (): void => {
     localStorage.removeItem("token");
@@ -78,53 +73,48 @@ const AuthPage: React.FC = () => {
 
   return (
     <div className={styles.authContainer}>
-      {showSuccess && (
-        <Notification
-          message="Registration successful! Please log in."
-          type="success"
-          onClose={() => setShowSuccess(false)}
-        />
+      {isLoading ? (
+        <LoadingSpinner />
+      ) : (
+        <>
+          {showSuccess && (
+            <Notification
+              message="Registration successful! Please log in."
+              type="success"
+              onClose={() => setShowSuccess(false)}
+            />
+          )}
+          <div className={styles.authBox}>
+            <h2>{isRegistering ? "Register" : "Login"}</h2>
+            {error && <p className={styles.error}>{error}</p>}
+            {isRegistering && (
+              <input type="text" name="name" placeholder="Name" value={formData.name} onChange={handleChange} />
+            )}
+            <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} />
+            <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} />
+            {isRegistering && (
+              <input
+                type="password"
+                name="confirmPassword"
+                placeholder="Confirm Password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+              />
+            )}
+            {isRegistering && (
+              <p className={styles.passwordStrength}>
+                Password Strength: <span>{passwordStrength}</span>
+              </p>
+            )}
+            <button onClick={handleAuth} disabled={isLoading}>
+              {isRegistering ? "Register" : "Login"}
+            </button>
+            <p onClick={() => setIsRegistering(!isRegistering)} className={styles.toggleText}>
+              {isRegistering ? "Already have an account? Log in here." : "Don't have an account? Register here."}
+            </p>
+          </div>
+        </>
       )}
-      <div className={styles.authBox}>
-        <h2>{isRegistering ? "Register" : "Login"}</h2>
-        {error && <p className={styles.error}>{error}</p>}
-        
-        {isRegistering && (
-          <input type="text" name="name" placeholder="Name" value={formData.name} onChange={handleChange} />
-        )}
-
-        <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} />
-
-        <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} />
-       {isRegistering && (
-          <input
-            type="password"
-            name="confirmPassword"
-            placeholder="Confirm Password"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-          />
-        )}
-
-        {isRegistering && (
-          <p className={styles.passwordStrength}>
-            Password Strength: <span>{passwordStrength}</span>
-          </p>
-        )}
-
-        <button onClick={handleAuth} className={styles.authButton}>
-          {isRegistering ? "Register" : "Login"}
-        </button>
-
-        <p
-          onClick={() => setIsRegistering(!isRegistering)}
-          className={styles.toggleText}
-        >
-          {isRegistering
-            ? "Already have an account? Log in here."
-            : "Don't have an account? Register here."}
-        </p>
-      </div>
     </div>
   );
 };

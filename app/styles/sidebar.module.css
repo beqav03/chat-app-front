@@ -5,6 +5,7 @@
   border-right: 1px solid #e0e0e0;
   transition: width 0.3s ease;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  position: relative;
 }
 
 .sidebar h2 {
@@ -27,6 +28,7 @@
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
+  cursor: pointer;
 }
 
 .friendItem:hover {
@@ -54,13 +56,11 @@
   color: #333;
 }
 
-/* Friend Actions */
 .friendActions {
   display: flex;
   gap: 10px;
 }
 
-/* Accept and Reject Buttons */
 .acceptButton {
   padding: 6px 12px;
   border: none;
@@ -95,7 +95,6 @@
   transform: translateY(-2px);
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .sidebar {
     width: 100%;

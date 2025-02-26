@@ -6,6 +6,7 @@
   background: linear-gradient(135deg, #ffffff, #f5f5f5);
   border-bottom: 1px solid #e0e0e0;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  position: relative;
 }
 
 .logo {
@@ -72,7 +73,7 @@
 
 .notificationsDropdown, .dropdown {
   position: absolute;
-  top: 30px;
+  top: 50px;
   right: 0;
   background: white;
   border: 1px solid #e0e0e0;
@@ -185,4 +186,15 @@
 .closeButton:hover {
   background: #c82333;
   transform: scale(1.1);
+}
+
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #28a745, #34d058);
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }

@@ -13,3 +13,9 @@
   margin: 10px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
+
+.error {
+  color: #dc3545;
+  text-align: center;
+  padding: 10px;
+}

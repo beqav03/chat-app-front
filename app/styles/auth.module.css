@@ -116,7 +116,12 @@
   z-index: 2;
 }
 
-.authBox button:hover {
+.authBox button:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+}
+
+.authBox button:hover:not(:disabled) {
   background: linear-gradient(45deg, #ff8e8e, #6be5dc);
   box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
   transform: translateY(-2px);

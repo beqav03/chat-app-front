@@ -8,6 +8,7 @@ import Logo from "../icons/chat.svg";
 import Close from "../icons/close.svg";
 import Image from "next/image";
 import { fetchWithAuth } from "../utils/api";
+import DoveAnimation from "./DoveAnimation";
 
 interface HeaderProps {
   onLogout: () => void;
@@ -29,7 +30,8 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
   const [searchInput, setSearchInput] = useState("");
   const [searchResults, setSearchResults] = useState<User[]>([]);
   const [isSearchResultsVisible, setIsSearchResultsVisible] = useState(false);
-  const [requestSent, setRequestSent] = useState(false); // State for request sent notification
+  const [requestSent, setRequestSent] = useState(false);
+  const [showDove, setShowDove] = useState(false);
 
   const handleLogout = async () => {
     await fetchWithAuth("/auth/logout", { method: "POST" });
@@ -54,7 +56,6 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
     try {
       const response = await fetchWithAuth(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/search?keyword=${searchInput}`);
       if (!response || !response.ok) throw new Error("Failed to fetch user");
-
       const data = await response.json();
       setSearchResults(data);
       setIsSearchResultsVisible(true);
@@ -65,21 +66,26 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
   };
 
   const sendFriendRequest = async (receiverId: number) => {
+    setShowDove(true);
     try {
-      const response = await fetchWithAuth(`/friends/request/${receiverId}`, {
-        method: "POST",
-      });
+      const response = await fetchWithAuth(`/friends/request/${receiverId}`, { method: "POST" });
       if (!response || !response.ok) throw new Error("Failed to send friend request");
-      setRequestSent(true); // Show notification
-      setTimeout(() => setRequestSent(false), 3000); // Hide notification after 3 seconds
+      setRequestSent(true);
+      setTimeout(() => setRequestSent(false), 3000);
     } catch (error) {
       console.error("Error sending friend request:", error);
       alert("Failed to send friend request");
+    } finally {
+      setTimeout(() => setShowDove(false), 2000);
     }
   };
 
   const closeSearchResults = () => {
     setIsSearchResultsVisible(false);
+  };
+
+  const handleNotificationClick = (index: number) => {
+    setNotifications((prev) => prev.filter((_, i) => i !== index));
   };
 
   useEffect(() => {
@@ -89,6 +95,7 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
   return (
     <>
       <header className={styles.header}>
+        {showDove && <DoveAnimation />}
         <div className={styles.logo}>
           <Image src={Logo} alt="Search" width={50} height={50} />
         </div>
@@ -109,9 +116,15 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
             {isNotificationsOpen && (
               <div className={styles.notificationsDropdown}>
                 <ul>
-                  {notifications.map((notification, index) => (
-                    <li key={index}>{notification}</li>
-                  ))}
+                  {notifications.length > 0 ? (
+                    notifications.map((notification, index) => (
+                      <li key={index} onClick={() => handleNotificationClick(index)}>
+                        {notification}
+                      </li>
+                    ))
+                  ) : (
+                    <li>No message</li>
+                  )}
                 </ul>
               </div>
             )}

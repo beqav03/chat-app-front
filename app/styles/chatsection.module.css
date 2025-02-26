@@ -6,6 +6,7 @@
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  position: relative;
 }
 
 .messages {
@@ -87,7 +88,6 @@
   transform: translateY(-2px);
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .chatSection {
     padding: 10px;

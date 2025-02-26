@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import styles from "../styles/sidebar.module.css";
 import Image from "next/image";
 import { fetchWithAuth } from "../utils/api";
+import DoveAnimation from "./DoveAnimation";
 
 interface Friend {
   id: number;
@@ -23,10 +24,12 @@ interface SidebarProps {
   friends: Friend[];
   searchQuery: string;
   userId: number;
+  onSelectFriend: (friendId: number) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ userId }) => {
+const Sidebar: React.FC<SidebarProps> = ({ userId, onSelectFriend }) => {
   const [filteredFriends, setFilteredFriends] = useState<Friend[]>([]);
+  const [showDove, setShowDove] = useState(false);
 
   useEffect(() => {
     const fetchFriends = async () => {
@@ -34,7 +37,6 @@ const Sidebar: React.FC<SidebarProps> = ({ userId }) => {
         const response = await fetchWithAuth(`/friends/${userId}`);
         if (!response || !response.ok) throw new Error("Failed to fetch friends");
         const data = await response.json();
-
         const mappedFriends = data.map((friend: ApiFriend) => ({
           id: friend.friend_id,
           name: friend.user_name,
@@ -42,56 +44,65 @@ const Sidebar: React.FC<SidebarProps> = ({ userId }) => {
           photo: "https://via.placeholder.com/50",
           status: "pending",
         }));
-
         setFilteredFriends(mappedFriends);
       } catch (error) {
         console.error("Error fetching friends:", error);
       }
     };
-
     fetchFriends();
   }, [userId]);
 
-  const handleAcceptFriendRequest = async (requestId: number) => {
+  const handleFriendClick = async (friendId: number) => {
     try {
-      const response = await fetchWithAuth(`/friends/accept/${requestId}`, {
-        method: "POST",
-      });
-      if (!response || !response.ok) throw new Error("Failed to accept friend request");
+      const response = await fetchWithAuth(`/chat/history/${friendId}`);
+      if (!response || !response.ok) throw new Error("Failed to fetch chat history");
+      onSelectFriend(friendId);
+    } catch (error) {
+      console.error("Error fetching chat history:", error);
+    }
+  };
 
-      setFilteredFriends((prevFriends) =>
-        prevFriends.map((friend) =>
-          friend.id === requestId ? { ...friend, status: "accepted" } : friend
-        )
+  const handleAcceptFriendRequest = async (requestId: number) => {
+    setShowDove(true);
+    try {
+      const response = await fetchWithAuth(`/friends/accept/${requestId}`, { method: "POST" });
+      if (!response || !response.ok) throw new Error("Failed to accept friend request");
+      setFilteredFriends((prev) =>
+        prev.map((friend) => (friend.id === requestId ? { ...friend, status: "accepted" } : friend))
       );
     } catch (error) {
       console.error("Error accepting friend request:", error);
+    } finally {
+      setTimeout(() => setShowDove(false), 2000);
     }
   };
 
   const handleRejectFriendRequest = async (requestId: number) => {
+    setShowDove(true);
     try {
-      const response = await fetchWithAuth(`/friends/reject/${requestId}`, {
-        method: "POST",
-      });
+      const response = await fetchWithAuth(`/friends/reject/${requestId}`, { method: "POST" });
       if (!response || !response.ok) throw new Error("Failed to reject friend request");
-
-      setFilteredFriends((prevFriends) =>
-        prevFriends.map((friend) =>
-          friend.id === requestId ? { ...friend, status: "rejected" } : friend
-        )
+      setFilteredFriends((prev) =>
+        prev.map((friend) => (friend.id === requestId ? { ...friend, status: "rejected" } : friend))
       );
     } catch (error) {
       console.error("Error rejecting friend request:", error);
+    } finally {
+      setTimeout(() => setShowDove(false), 2000);
     }
   };
 
   return (
     <aside className={styles.sidebar}>
+      {showDove && <DoveAnimation />}
       <h2>Friends</h2>
       <ul className={styles.friendList}>
         {filteredFriends.map((friend) => (
-          <li key={friend.id} className={styles.friendItem}>
+          <li
+            key={friend.id}
+            className={styles.friendItem}
+            onClick={() => handleFriendClick(friend.id)}
+          >
             <div className={styles.friendPhotoContainer}>
               <Image
                 src={friend.photo}
@@ -101,22 +112,26 @@ const Sidebar: React.FC<SidebarProps> = ({ userId }) => {
                 className={styles.friendPhoto}
               />
             </div>
-
             <span className={styles.friendName}>
               {friend.name} {friend.lastname}
             </span>
-
             {friend.status === "pending" && (
               <div className={styles.friendActions}>
                 <button
                   className={styles.acceptButton}
-                  onClick={() => handleAcceptFriendRequest(friend.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleAcceptFriendRequest(friend.id);
+                  }}
                 >
                   ✅ Accept
                 </button>
                 <button
                   className={styles.rejectButton}
-                  onClick={() => handleRejectFriendRequest(friend.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleRejectFriendRequest(friend.id);
+                  }}
                 >
                   ❌ Reject
                 </button>

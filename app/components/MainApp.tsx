@@ -36,6 +36,7 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [userId, setUserId] = useState<number | null>(null);
+  const [selectedFriendId, setSelectedFriendId] = useState<number | null>(null);
   const router = useRouter();
 
   const fetchUserProfile = useCallback(async () => {
@@ -62,6 +63,10 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
       setError("Failed to fetch friends");
     }
   }, []);
+
+  const handleSelectFriend = (friendId: number) => {
+    setSelectedFriendId(friendId);
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -92,9 +97,7 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
     newSocket.on("friend_status", (updatedFriend: Friend) => {
       setFriends((prevFriends) =>
         prevFriends.map((friend) =>
-          friend.id === updatedFriend.id
-            ? { ...friend, status: updatedFriend.status }
-            : friend
+          friend.id === updatedFriend.id ? { ...friend, status: updatedFriend.status } : friend
         )
       );
     });
@@ -112,12 +115,17 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
       <Header onLogout={onLogout} onProfileClick={() => setIsProfileOpen(true)} setSearchQuery={setSearchQuery} />
       {error && <div className={styles.error}>{error}</div>}
       <div className={styles.content}>
-        {userId && <Sidebar friends={friends} searchQuery={searchQuery} userId={userId} />}
-        {socket && <ChatSection socket={socket} />}
+        {userId && (
+          <Sidebar
+            friends={friends}
+            searchQuery={searchQuery}
+            userId={userId}
+            onSelectFriend={handleSelectFriend}
+          />
+        )}
+        {socket && <ChatSection socket={socket} selectedFriendId={selectedFriendId} />}
       </div>
-      {isProfileOpen && (
-        <ProfileModal onClose={() => setIsProfileOpen(false)} />
-      )}
+      {isProfileOpen && <ProfileModal onClose={() => setIsProfileOpen(false)} />}
     </div>
   );
 };

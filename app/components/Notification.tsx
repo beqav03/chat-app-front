@@ -21,7 +21,7 @@ const Notification: React.FC<NotificationProps> = ({ message, type, onClose }) =
 
   return (
     visible && (
-      <div className={`${styles.notification} ${styles[type]}`}>
+      <div className={`${styles.notification} ${styles[type]} ${styles.visible}`}>
         {message}
       </div>
     )
