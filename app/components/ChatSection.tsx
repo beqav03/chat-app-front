@@ -70,9 +70,8 @@ const ChatSection: React.FC<ChatSectionProps> = ({ socket, selectedFriendId }) =
     const fetchChatHistory = async () => {
       if (selectedFriendId && userId) {
         try {
-          const response = await fetchWithAuth(`/chat/history/${selectedFriendId}`, {
+          const response = await fetchWithAuth(`/chat/history/${selectedFriendId}?userId=${userId}`, {
             method: "GET",
-            body: JSON.stringify({ userId }),
           });
           if (!response || !response.ok) throw new Error("Failed to fetch chat history");
           const history: Message[] = await response.json();
@@ -95,6 +94,7 @@ const ChatSection: React.FC<ChatSectionProps> = ({ socket, selectedFriendId }) =
       body: JSON.stringify(payload),
     });
     socket.emit("message", { ...payload, timestamp });
+    setMessages((prev) => [...prev, { ...payload, timestamp }]);
     setMessage("");
     setTimeout(() => setShowDove(false), 2000);
   };

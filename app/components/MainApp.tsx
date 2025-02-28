@@ -64,7 +64,7 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
 
   const fetchFriends = useCallback(async () => {
     try {
-      const response = await fetchWithAuth("/friends");
+      const response = await fetchWithAuth(`/friends/${userId}`);
       if (!response) return;
       const data: ApiFriend[] = await response.json();
       const mappedFriends: Friend[] = data.map((friend) => ({
@@ -79,7 +79,7 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
       console.error("Error fetching friends:", error);
       setError("Failed to fetch friends");
     }
-  }, []);
+  }, [userId]);
 
   const handleSelectFriend = (friendId: number) => {
     setSelectedFriendId(friendId);
@@ -95,12 +95,14 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
     fetchUserProfile();
     fetchFriends();
 
-    const newSocket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}`, {
+    const socketUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    const newSocket = io(socketUrl, {
       transports: ["websocket"],
       withCredentials: true,
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
+      auth: { token },
     });
 
     newSocket.on("connect", () => {
