@@ -25,8 +25,9 @@ interface ApiFriend {
   friend_id: number;
   user_name: string;
   user_lastname: string;
-  profilePicture?: string;
+  user_email?: string;
   friend_status: "pending" | "accepted" | "rejected";
+  profilePicture?: string;
 }
 
 interface SidebarProps {
@@ -47,8 +48,7 @@ const Sidebar: React.FC<SidebarProps> = ({ userId, searchQuery, onSelectFriend }
         const response = await fetchWithAuth(`/friends/${userId}`);
         if (!response || !response.ok) throw new Error("Failed to fetch friends");
         const data = await response.json();
-        
-        const mappedFriends: Friend[] = data.friends.map((friend: ApiFriend) => ({
+        const mappedFriends: Friend[] = (data.friends || []).map((friend: ApiFriend) => ({
           id: friend.friend_id,
           name: friend.user_name,
           lastname: friend.user_lastname,
@@ -56,7 +56,13 @@ const Sidebar: React.FC<SidebarProps> = ({ userId, searchQuery, onSelectFriend }
           status: friend.friend_status,
         }));
 
-        const mappedRequests: PendingRequest[] = data.pendingRequests || [];
+        const mappedRequests: PendingRequest[] = (data.pendingRequests || []).map((req: PendingRequest) => ({
+          id: req.id,
+          senderId: req.senderId,
+          senderName: req.senderName,
+          senderLastname: req.senderLastname,
+          status: req.status,
+        }));
 
         setFriends(
           mappedFriends.filter((friend) =>
@@ -90,17 +96,20 @@ const Sidebar: React.FC<SidebarProps> = ({ userId, searchQuery, onSelectFriend }
     try {
       const response = await fetchWithAuth(`/friends/accept/${requestId}`, { method: "POST" });
       if (!response || !response.ok) throw new Error("Failed to accept friend request");
+      const acceptedRequest = pendingRequests.find((req) => req.id === requestId);
       setPendingRequests((prev) => prev.filter((req) => req.id !== requestId));
-      setFriends((prev) => [
-        ...prev,
-        {
-          id: requestId,
-          name: pendingRequests.find((req) => req.id === requestId)!.senderName,
-          lastname: pendingRequests.find((req) => req.id === requestId)!.senderLastname,
-          photo: "https://via.placeholder.com/50",
-          status: "accepted",
-        },
-      ]);
+      if (acceptedRequest) {
+        setFriends((prev) => [
+          ...prev,
+          {
+            id: requestId,
+            name: acceptedRequest.senderName,
+            lastname: acceptedRequest.senderLastname,
+            photo: "https://via.placeholder.com/50",
+            status: "accepted",
+          },
+        ]);
+      }
     } catch (error) {
       console.error("Error accepting friend request:", error);
     } finally {
