@@ -13,13 +13,6 @@ interface Friend {
   status: "pending" | "accepted" | "rejected";
 }
 
-interface ApiFriend {
-  user_name: string;
-  user_lastname: string;
-  user_email: string;
-  friend_id: number;
-}
-
 interface SidebarProps {
   friends: Friend[];
   searchQuery: string;
@@ -27,7 +20,7 @@ interface SidebarProps {
   onSelectFriend: (friendId: number) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ userId, onSelectFriend }) => {
+const Sidebar: React.FC<SidebarProps> = ({ userId, searchQuery, onSelectFriend }) => {
   const [filteredFriends, setFilteredFriends] = useState<Friend[]>([]);
   const [showDove, setShowDove] = useState(false);
 
@@ -37,20 +30,24 @@ const Sidebar: React.FC<SidebarProps> = ({ userId, onSelectFriend }) => {
         const response = await fetchWithAuth(`/friends/${userId}`);
         if (!response || !response.ok) throw new Error("Failed to fetch friends");
         const data = await response.json();
-        const mappedFriends = data.map((friend: ApiFriend) => ({
+        const mappedFriends = data.map((friend: any) => ({
           id: friend.friend_id,
           name: friend.user_name,
           lastname: friend.user_lastname,
-          photo: "https://via.placeholder.com/50",
-          status: "pending",
+          photo: friend.profilePicture || "https://via.placeholder.com/50",
+          status: friend.status,
         }));
-        setFilteredFriends(mappedFriends);
+        setFilteredFriends(
+          mappedFriends.filter((friend: Friend) =>
+            `${friend.name} ${friend.lastname}`.toLowerCase().includes(searchQuery.toLowerCase())
+          )
+        );
       } catch (error) {
         console.error("Error fetching friends:", error);
       }
     };
     fetchFriends();
-  }, [userId]);
+  }, [userId, searchQuery]);
 
   const handleFriendClick = async (friendId: number) => {
     try {
@@ -101,7 +98,7 @@ const Sidebar: React.FC<SidebarProps> = ({ userId, onSelectFriend }) => {
           <li
             key={friend.id}
             className={styles.friendItem}
-            onClick={() => handleFriendClick(friend.id)}
+            onClick={() => friend.status === "accepted" && handleFriendClick(friend.id)}
           >
             <div className={styles.friendPhotoContainer}>
               <Image
@@ -113,7 +110,7 @@ const Sidebar: React.FC<SidebarProps> = ({ userId, onSelectFriend }) => {
               />
             </div>
             <span className={styles.friendName}>
-              {friend.name} {friend.lastname}
+              {friend.name} {friend.lastname} ({friend.status})
             </span>
             {friend.status === "pending" && (
               <div className={styles.friendActions}>

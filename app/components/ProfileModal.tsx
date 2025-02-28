@@ -1,7 +1,9 @@
+"use client";
 import React, { useEffect, useState } from "react";
 import styles from "../styles/profile.module.css";
 import { fetchWithAuth } from "../utils/api";
 import Image from "next/image";
+import Notification from "./Notification";
 
 interface UserProfile {
   id: number;
@@ -26,7 +28,8 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [showChangeEmail, setShowChangeEmail] = useState(false);
   const [passwordData, setPasswordData] = useState({ oldPassword: "", newPassword: "" });
-  const [emailData, setEmailData] = useState({ newEmail: "" });
+  const [emailData, setEmailData] = useState({ newEmail: "", code: "" });
+  const [emailVerificationSent, setEmailVerificationSent] = useState(false);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -57,7 +60,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
       formData.append("profilePicture", file);
       try {
         const response = await fetchWithAuth("/profile/update-picture", {
-          method: "POST",
+          method: "PUT",
           body: formData,
         });
         if (!response || !response.ok) throw new Error("Failed to update picture");
@@ -72,7 +75,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
 
   const handleSave = async () => {
     try {
-      const response = await fetchWithAuth("/profile/update", {
+      const response = await fetchWithAuth("/profile/update-info", {
         method: "PUT",
         body: JSON.stringify(formData),
       });
@@ -86,12 +89,13 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
 
   const handleChangePassword = async () => {
     try {
-      const response = await fetchWithAuth("/profile/change-password", {
-        method: "POST",
+      const response = await fetchWithAuth("/profile/update-password", {
+        method: "PUT",
         body: JSON.stringify(passwordData),
       });
       if (!response || !response.ok) throw new Error("Failed to change password");
       setShowChangePassword(false);
+      setPasswordData({ oldPassword: "", newPassword: "" });
     } catch {
       setError("Failed to change password");
     }
@@ -99,15 +103,30 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
 
   const handleChangeEmail = async () => {
     try {
-      const response = await fetchWithAuth("/profile/change-email", {
-        method: "POST",
-        body: JSON.stringify(emailData),
+      const response = await fetchWithAuth("/profile/update-email", {
+        method: "PUT",
+        body: JSON.stringify({ newEmail: emailData.newEmail }),
       });
-      if (!response || !response.ok) throw new Error("Failed to change email");
-      setShowChangeEmail(false);
-      setUser((prev) => (prev ? { ...prev, email: emailData.newEmail } : null));
+      if (!response || !response.ok) throw new Error("Failed to initiate email change");
+      setEmailVerificationSent(true);
     } catch {
-      setError("Failed to change email");
+      setError("Failed to initiate email change");
+    }
+  };
+
+  const handleConfirmEmail = async () => {
+    try {
+      const response = await fetchWithAuth("/profile/confirm-email", {
+        method: "PUT",
+        body: JSON.stringify({ code: emailData.code }),
+      });
+      if (!response || !response.ok) throw new Error("Invalid verification code");
+      setUser((prev) => (prev ? { ...prev, email: emailData.newEmail } : null));
+      setShowChangeEmail(false);
+      setEmailVerificationSent(false);
+      setEmailData({ newEmail: "", code: "" });
+    } catch {
+      setError("Invalid verification code");
     }
   };
 
@@ -159,7 +178,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
             <p><strong>Name:</strong> {formData.name}</p>
             <p><strong>Lastname:</strong> {formData.lastname}</p>
             <p><strong>Email:</strong> {user?.email}</p>
-            <p><strong>Bio:</strong> {formData.bio}</p>
+            <p><strong>Bio:</strong> {formData.bio || "No bio yet"}</p>
             <button onClick={() => setIsEditing(true)}>Edit</button>
           </>
         )}
@@ -190,7 +209,17 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
               onChange={(e) => setEmailData({ ...emailData, newEmail: e.target.value })}
               placeholder="New Email"
             />
-            <button onClick={handleChangeEmail}>Submit</button>
+            {emailVerificationSent && (
+              <input
+                type="text"
+                value={emailData.code}
+                onChange={(e) => setEmailData({ ...emailData, code: e.target.value })}
+                placeholder="Verification Code"
+              />
+            )}
+            <button onClick={emailVerificationSent ? handleConfirmEmail : handleChangeEmail}>
+              {emailVerificationSent ? "Confirm" : "Submit"}
+            </button>
           </div>
         )}
         <button onClick={onClose}>Close</button>

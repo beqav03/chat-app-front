@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import io, { Socket } from "socket.io-client";
@@ -49,15 +50,23 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
     } catch (error) {
       console.error("Error fetching profile:", error);
       setError("Failed to load profile");
+      router.replace("/login");
     }
-  }, []);
+  }, [router]);
 
   const fetchFriends = useCallback(async () => {
     try {
       const response = await fetchWithAuth("/friends");
       if (!response) return;
       const data = await response.json();
-      setFriends(data);
+      const mappedFriends = data.map((friend: any) => ({
+        id: friend.friend_id,
+        name: friend.user_name,
+        lastname: friend.user_lastname,
+        photo: friend.profilePicture || "https://via.placeholder.com/50",
+        status: friend.status,
+      }));
+      setFriends(mappedFriends);
     } catch (error) {
       console.error("Error fetching friends:", error);
       setError("Failed to fetch friends");
@@ -78,7 +87,7 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
     fetchUserProfile();
     fetchFriends();
 
-    const newSocket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}/socket.io`, {
+    const newSocket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}`, {
       transports: ["websocket"],
       withCredentials: true,
       reconnection: true,
@@ -94,21 +103,28 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
       console.log("Socket disconnected");
     });
 
-    newSocket.on("friend_status", (updatedFriend: Friend) => {
+    newSocket.on("friend_status", (updatedFriend: { requestId: number; status: string }) => {
       setFriends((prevFriends) =>
         prevFriends.map((friend) =>
-          friend.id === updatedFriend.id ? { ...friend, status: updatedFriend.status } : friend
+          friend.id === updatedFriend.requestId ? { ...friend, status: updatedFriend.status as any } : friend
         )
       );
+    });
+
+    newSocket.on("friend_request", (request: { senderId: number; receiverId: number; status: string }) => {
+      if (request.receiverId === userId) {
+        fetchFriends();
+      }
     });
 
     setSocket(newSocket);
 
     return () => {
       newSocket.off("friend_status");
+      newSocket.off("friend_request");
       newSocket.disconnect();
     };
-  }, [router, fetchFriends, fetchUserProfile]);
+  }, [router, fetchFriends, fetchUserProfile, userId]);
 
   return (
     <div className={styles.mainApp}>

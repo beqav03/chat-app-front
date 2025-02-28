@@ -33,11 +33,17 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
   const [isSearchResultsVisible, setIsSearchResultsVisible] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
   const [showDove, setShowDove] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const handleLogout = async () => {
+    setShowLogoutConfirm(true);
+  };
+
+  const confirmLogout = async () => {
     await fetchWithAuth("/auth/logout", { method: "POST" });
     localStorage.removeItem("token");
     onLogout();
+    setShowLogoutConfirm(false);
   };
 
   const fetchNotifications = async () => {
@@ -63,7 +69,7 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
     } catch (error) {
       console.error("Error searching users:", error);
       setSearchResults([]);
-      setIsSearchResultsVisible(true); // Still show the "no results" message on error
+      setIsSearchResultsVisible(true);
     }
   };
 
@@ -107,6 +113,7 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
             placeholder="Search Friends"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
+            onKeyPress={(e) => e.key === "Enter" && handleSearch()}
           />
           <span className={styles.searchIcon} onClick={handleSearch}>
             <Image src={MagnifyingGlass} alt="Search" width={20} height={20} />
@@ -174,6 +181,16 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
           type="success"
           onClose={() => setRequestSent(false)}
         />
+      )}
+      {showLogoutConfirm && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            <h2>Confirm Logout</h2>
+            <p>Are you sure you want to log out?</p>
+            <button onClick={confirmLogout}>Yes</button>
+            <button onClick={() => setShowLogoutConfirm(false)}>No</button>
+          </div>
+        </div>
       )}
     </>
   );
