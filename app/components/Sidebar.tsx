@@ -33,6 +33,7 @@ const Sidebar: React.FC<SidebarProps> = ({ userId, searchQuery, onSelectFriend }
   const [friends, setFriends] = useState<Friend[]>([]);
   const [pendingRequests, setPendingRequests] = useState<Friend[]>([]);
   const [showDove, setShowDove] = useState(false);
+  const [selectedFriendId, setSelectedFriendId] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchFriendsAndRequests = async () => {
@@ -40,7 +41,6 @@ const Sidebar: React.FC<SidebarProps> = ({ userId, searchQuery, onSelectFriend }
         const response = await fetchWithAuth(`/friends/${userId}`);
         if (!response || !response.ok) throw new Error("Failed to fetch friends");
         const data: ApiFriend[] = await response.json();
-        console.log("Raw API Response:", data);
 
         const allFriends: Friend[] = data.map((friend) => ({
           id: friend.friend_id,
@@ -70,14 +70,9 @@ const Sidebar: React.FC<SidebarProps> = ({ userId, searchQuery, onSelectFriend }
     fetchFriendsAndRequests();
   }, [userId, searchQuery]);
 
-  const handleFriendClick = async (friendId: number) => {
-    try {
-      const response = await fetchWithAuth(`/chat/history/${friendId}`);
-      if (!response || !response.ok) throw new Error("Failed to fetch chat history");
-      onSelectFriend(friendId);
-    } catch (error) {
-      console.error("Error fetching chat history:", error);
-    }
+  const handleFriendClick = (friendId: number) => {
+    setSelectedFriendId(friendId);
+    onSelectFriend(friendId);
   };
 
   const handleAcceptFriendRequest = async (requestId: number) => {
@@ -121,7 +116,9 @@ const Sidebar: React.FC<SidebarProps> = ({ userId, searchQuery, onSelectFriend }
         {friends.map((friend) => (
           <li
             key={friend.id}
-            className={styles.friendItem}
+            className={`${styles.friendItem} ${
+              selectedFriendId === friend.id ? styles.selected : ''
+            }`}
             onClick={() => friend.status === "accepted" && handleFriendClick(friend.id)}
           >
             <div className={styles.friendPhotoContainer}>

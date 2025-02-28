@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Socket } from "socket.io-client";
 import styles from "../styles/chatsection.module.css";
 import { fetchWithAuth } from "../utils/api";
@@ -11,6 +11,7 @@ interface ChatSectionProps {
 }
 
 interface Message {
+  id: number;
   userId: number;
   friendId: number;
   message: string;
@@ -23,8 +24,11 @@ const ChatSection: React.FC<ChatSectionProps> = ({ socket, selectedFriendId }) =
   const [showDove, setShowDove] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [userId, setUserId] = useState<number | null>(null);
-  const [isSending, setIsSending] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -38,61 +42,22 @@ const ChatSection: React.FC<ChatSectionProps> = ({ socket, selectedFriendId }) =
   }, []);
 
   useEffect(() => {
+    if (!socket || !userId || !selectedFriendId) return;
+
     const fetchChatHistory = async () => {
-      if (selectedFriendId && userId) {
-        try {
-          const response = await fetchWithAuth(`/chat/history/${selectedFriendId}?userId=${userId}`, {
-            method: "GET",
-          });
-          if (!response || !response.ok) throw new Error("Failed to fetch chat history");
-          const history: Message[] = await response.json();
-
-          setMessages(history || []);
-        } catch (error) {
-          console.error("Error fetching chat history:", error);
-          setError("Failed to load chat history");
-
-          setMessages([]);
-        }
+      try {
+        const response = await fetchWithAuth(`/chat/history/${selectedFriendId}?userId=${userId}`);
+        if (!response || !response.ok) throw new Error("Failed to fetch chat history");
+        const history: Message[] = await response.json();
+        setMessages(history);
+      } catch (error) {
+        console.error("Error fetching chat history:", error);
       }
     };
+
     fetchChatHistory();
-  }, [selectedFriendId, userId]);
-
-  const sendMessage = async () => {
-    if (!message.trim() || !selectedFriendId || !userId) return;
-    setIsSending(true);
-    setError(null);
-    try {
-      const timestamp = new Date().toISOString();
-      const payload = { userId, message, friendId: selectedFriendId };
-  
-      socket.emit("message", payload);
-  
-      setMessages((prev) => [...prev, { ...payload, timestamp }]);
-      setMessage("");
-      setShowDove(true);
-      setTimeout(() => setShowDove(false), 2000);
-    } catch (error) {
-      console.error("Error sending message:", error);
-      setError("Failed to send message");
-    } finally {
-      setIsSending(false);
-    }
-  };
-
-  const handleTyping = () => {
-    if (selectedFriendId) {
-      socket.emit("typing", { friendId: selectedFriendId });
-      setTimeout(() => socket.emit("stop_typing", { friendId: selectedFriendId }), 2000);
-    }
-  };
-
-  useEffect(() => {
-    if (!socket) return;
 
     socket.on("message", (msg: Message) => {
-      console.log("Received message:", msg);
       if (
         (msg.userId === userId && msg.friendId === selectedFriendId) ||
         (msg.userId === selectedFriendId && msg.friendId === userId)
@@ -101,7 +66,6 @@ const ChatSection: React.FC<ChatSectionProps> = ({ socket, selectedFriendId }) =
       }
     });
 
-    // Listen for typing events
     socket.on("typing", ({ friendId }: { friendId: number }) => {
       if (friendId === selectedFriendId) setIsTyping(true);
     });
@@ -117,40 +81,75 @@ const ChatSection: React.FC<ChatSectionProps> = ({ socket, selectedFriendId }) =
     };
   }, [socket, selectedFriendId, userId]);
 
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const sendMessage = async () => {
+    if (!message.trim() || !selectedFriendId || !userId) return;
+    
+    setShowDove(true);
+    const payload = { userId, message, friendId: selectedFriendId };
+    
+    try {
+      const response = await fetchWithAuth("/chat/send", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+      
+      if (!response || !response.ok) throw new Error("Failed to send message");
+      const result = await response.json();
+      
+      setMessage("");
+      setTimeout(() => setShowDove(false), 2000);
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
+  };
+
+  const handleTyping = () => {
+    if (selectedFriendId) {
+      socket.emit("typing", { friendId: selectedFriendId });
+      setTimeout(() => socket.emit("stop_typing", { friendId: selectedFriendId }), 2000);
+    }
+  };
+
   return (
     <div className={styles.chatSection}>
       {showDove && <DoveAnimation />}
       <div className={styles.messages}>
-        {messages.map((msg, index) => (
+        {messages.map((msg) => (
           <div
-            key={index}
+            key={msg.id}
             className={`${styles.message} ${msg.userId === userId ? styles.userMessage : ""}`}
           >
             <div className={styles.messageHeader}>
               <span className={styles.userName}>User {msg.userId}</span>
-              <span className={styles.timestamp}>{new Date(msg.timestamp).toLocaleTimeString()}</span>
+              <span className={styles.timestamp}>
+                {new Date(msg.timestamp).toLocaleTimeString()}
+              </span>
             </div>
             <div className={styles.messageContent}>{msg.message}</div>
           </div>
         ))}
         {isTyping && <div className={styles.message}>Friend is typing...</div>}
+        <div ref={messagesEndRef} />
       </div>
-      <div className={styles.inputContainer}>
-        <input
-          type="text"
-          value={message}
-          onChange={(e) => {
-            setMessage(e.target.value);
-            handleTyping(); // Call the handleTyping function
-          }}
-          placeholder="Type a message..."
-          onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-        />
-        <button onClick={sendMessage} disabled={isSending}>
-          {isSending ? "Sending..." : "Send"}
-        </button>
-      </div>
-      {error && <div className={styles.error}>{error}</div>}
+      {selectedFriendId && (
+        <div className={styles.inputContainer}>
+          <input
+            type="text"
+            value={message}
+            onChange={(e) => {
+              setMessage(e.target.value);
+              handleTyping();
+            }}
+            placeholder="Type a message..."
+            onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+          />
+          <button onClick={sendMessage}>Send</button>
+        </div>
+      )}
     </div>
   );
 };

@@ -95,6 +95,11 @@
   transform: translateY(-2px);
 }
 
+.selected {
+  background: #e1f5fe;
+  border: 2px solid #007bff;
+}
+
 @media (max-width: 768px) {
   .sidebar {
     width: 100%;
