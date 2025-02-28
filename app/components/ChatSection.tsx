@@ -12,7 +12,7 @@ interface ChatSectionProps {
 
 interface Message {
   userId: number;
-  friendId?: number;
+  friendId: number;
   message: string;
   timestamp: string;
 }
@@ -22,10 +22,25 @@ const ChatSection: React.FC<ChatSectionProps> = ({ socket, selectedFriendId }) =
   const [messages, setMessages] = useState<Message[]>([]);
   const [showDove, setShowDove] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [userId, setUserId] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchUserId = async () => {
+      const response = await fetchWithAuth("/profile");
+      if (response && response.ok) {
+        const data = await response.json();
+        setUserId(data.id);
+      }
+    };
+    fetchUserId();
+  }, []);
 
   useEffect(() => {
     socket.on("message", (msg: Message) => {
-      if (msg.friendId === selectedFriendId || msg.userId === selectedFriendId) {
+      if (
+        (msg.userId === userId && msg.friendId === selectedFriendId) ||
+        (msg.userId === selectedFriendId && msg.friendId === userId)
+      ) {
         setMessages((prev) => [...prev, msg]);
       }
     });
@@ -40,19 +55,18 @@ const ChatSection: React.FC<ChatSectionProps> = ({ socket, selectedFriendId }) =
       socket.off("typing");
       socket.off("stop_typing");
     };
-  }, [socket, selectedFriendId]);
+  }, [socket, selectedFriendId, userId]);
 
   useEffect(() => {
     const fetchChatHistory = async () => {
-      if (selectedFriendId) {
+      if (selectedFriendId && userId) {
         try {
-          const userId = (await fetchWithAuth("/profile"))?.json().then((data) => data.id);
           const response = await fetchWithAuth(`/chat/history/${selectedFriendId}`, {
             method: "GET",
             body: JSON.stringify({ userId }),
           });
           if (!response || !response.ok) throw new Error("Failed to fetch chat history");
-          const history = await response.json();
+          const history: Message[] = await response.json();
           setMessages(history);
         } catch (error) {
           console.error("Error fetching chat history:", error);
@@ -60,13 +74,12 @@ const ChatSection: React.FC<ChatSectionProps> = ({ socket, selectedFriendId }) =
       }
     };
     fetchChatHistory();
-  }, [selectedFriendId]);
+  }, [selectedFriendId, userId]);
 
   const sendMessage = async () => {
-    if (!message.trim() || !selectedFriendId) return;
+    if (!message.trim() || !selectedFriendId || !userId) return;
     setShowDove(true);
     const timestamp = new Date().toISOString();
-    const userId = (await fetchWithAuth("/profile"))?.json().then((data) => data.id);
     await fetchWithAuth("/chat/send", {
       method: "POST",
       body: JSON.stringify({ userId, message, friendId: selectedFriendId }),
@@ -90,7 +103,7 @@ const ChatSection: React.FC<ChatSectionProps> = ({ socket, selectedFriendId }) =
         {messages.map((msg, index) => (
           <div
             key={index}
-            className={`${styles.message} ${msg.userId === selectedFriendId ? "" : styles.userMessage}`}
+            className={`${styles.message} ${msg.userId === userId ? styles.userMessage : ""}`}
           >
             <div className={styles.messageHeader}>
               <span className={styles.userName}>User {msg.userId}</span>
