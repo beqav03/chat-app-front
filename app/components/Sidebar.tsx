@@ -21,6 +21,14 @@ interface PendingRequest {
   status: "pending";
 }
 
+interface ApiFriend {
+  friend_id: number;
+  user_name: string;
+  user_lastname: string;
+  profilePicture?: string;
+  friend_status: "pending" | "accepted" | "rejected";
+}
+
 interface SidebarProps {
   friends: Friend[];
   searchQuery: string;
@@ -40,12 +48,12 @@ const Sidebar: React.FC<SidebarProps> = ({ userId, searchQuery, onSelectFriend }
         if (!response || !response.ok) throw new Error("Failed to fetch friends");
         const data = await response.json();
         
-        const mappedFriends: Friend[] = data.friends.map((friend: any) => ({
+        const mappedFriends: Friend[] = data.friends.map((friend: ApiFriend) => ({
           id: friend.friend_id,
           name: friend.user_name,
           lastname: friend.user_lastname,
           photo: friend.profilePicture || "https://via.placeholder.com/50",
-          status: friend.status,
+          status: friend.friend_status,
         }));
 
         const mappedRequests: PendingRequest[] = data.pendingRequests || [];
