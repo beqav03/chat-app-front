@@ -48,13 +48,19 @@ const Sidebar: React.FC<SidebarProps> = ({ userId, searchQuery, onSelectFriend }
         const response = await fetchWithAuth(`/friends/${userId}`);
         if (!response || !response.ok) throw new Error("Failed to fetch friends");
         const data = await response.json();
-        const mappedFriends: Friend[] = (data.friends || []).map((friend: ApiFriend) => ({
-          id: friend.friend_id,
-          name: friend.user_name,
-          lastname: friend.user_lastname,
-          photo: friend.profilePicture || "https://via.placeholder.com/50",
-          status: friend.friend_status,
-        }));
+        console.log("Raw API Response:", data);
+
+        const mappedFriends: Friend[] = (data.friends || []).map((friend: ApiFriend) => {
+          const mappedFriend = {
+            id: friend.friend_id,
+            name: friend.user_name,
+            lastname: friend.user_lastname,
+            photo: friend.profilePicture || "https://via.placeholder.com/50",
+            status: friend.friend_status,
+          };
+          return mappedFriend;
+        });
+        console.log("Mapped Friends:", mappedFriends); // Log mapped friends
 
         const mappedRequests: PendingRequest[] = (data.pendingRequests || []).map((req: PendingRequest) => ({
           id: req.id,
@@ -63,6 +69,7 @@ const Sidebar: React.FC<SidebarProps> = ({ userId, searchQuery, onSelectFriend }
           senderLastname: req.senderLastname,
           status: req.status,
         }));
+        console.log("Mapped Requests:", mappedRequests); // Log mapped requests
 
         setFriends(
           mappedFriends.filter((friend) =>
