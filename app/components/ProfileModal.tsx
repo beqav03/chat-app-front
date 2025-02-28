@@ -30,6 +30,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
   const [passwordData, setPasswordData] = useState({ oldPassword: "", newPassword: "" });
   const [emailData, setEmailData] = useState({ newEmail: "", code: "" });
   const [emailVerificationSent, setEmailVerificationSent] = useState(false);
+  const [showSuccess, setShowSuccess] = useState<string>("");
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -67,6 +68,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
         const data = await response.json();
         setFormData((prev) => ({ ...prev, profilePicture: data.profilePicture }));
         setUser((prev) => (prev ? { ...prev, profilePicture: data.profilePicture } : null));
+        setShowSuccess("Profile picture updated successfully!");
       } catch {
         setError("Failed to update picture");
       }
@@ -82,6 +84,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
       if (!response || !response.ok) throw new Error("Failed to update profile");
       setUser((prev) => (prev ? { ...prev, ...formData } : null));
       setIsEditing(false);
+      setShowSuccess("Profile updated successfully!");
     } catch {
       setError("Failed to save profile");
     }
@@ -96,6 +99,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
       if (!response || !response.ok) throw new Error("Failed to change password");
       setShowChangePassword(false);
       setPasswordData({ oldPassword: "", newPassword: "" });
+      setShowSuccess("Password changed successfully!");
     } catch {
       setError("Failed to change password");
     }
@@ -125,6 +129,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
       setShowChangeEmail(false);
       setEmailVerificationSent(false);
       setEmailData({ newEmail: "", code: "" });
+      setShowSuccess("Email updated successfully!");
     } catch {
       setError("Invalid verification code");
     }
@@ -135,6 +140,13 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
 
   return (
     <div className={styles.modalOverlay}>
+      {showSuccess && (
+        <Notification
+          message={showSuccess}
+          type="success"
+          onClose={() => setShowSuccess("")}
+        />
+      )}
       <div className={styles.modalContent}>
         <h2>Profile Information</h2>
         {formData.profilePicture && (

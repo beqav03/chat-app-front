@@ -13,6 +13,14 @@ interface Friend {
   status: "pending" | "accepted" | "rejected";
 }
 
+interface ApiFriend {
+  friend_id: number;
+  user_name: string;
+  user_lastname: string;
+  profilePicture?: string;
+  status: "pending" | "accepted" | "rejected";
+}
+
 interface SidebarProps {
   friends: Friend[];
   searchQuery: string;
@@ -29,8 +37,8 @@ const Sidebar: React.FC<SidebarProps> = ({ userId, searchQuery, onSelectFriend }
       try {
         const response = await fetchWithAuth(`/friends/${userId}`);
         if (!response || !response.ok) throw new Error("Failed to fetch friends");
-        const data = await response.json();
-        const mappedFriends = data.map((friend: any) => ({
+        const data: ApiFriend[] = await response.json();
+        const mappedFriends: Friend[] = data.map((friend) => ({
           id: friend.friend_id,
           name: friend.user_name,
           lastname: friend.user_lastname,
@@ -38,7 +46,7 @@ const Sidebar: React.FC<SidebarProps> = ({ userId, searchQuery, onSelectFriend }
           status: friend.status,
         }));
         setFilteredFriends(
-          mappedFriends.filter((friend: Friend) =>
+          mappedFriends.filter((friend) =>
             `${friend.name} ${friend.lastname}`.toLowerCase().includes(searchQuery.toLowerCase())
           )
         );

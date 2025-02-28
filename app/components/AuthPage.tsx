@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import styles from "../styles/auth.module.css";
 import MainApp from "./MainApp";
-import { fetchWithAuth } from "../utils/api";
 import Notification from "./Notification";
 import LoadingSpinner from "./LoadingSpinner";
 

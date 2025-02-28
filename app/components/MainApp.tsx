@@ -21,6 +21,14 @@ interface Friend {
   status: "pending" | "accepted" | "rejected";
 }
 
+interface ApiFriend {
+  friend_id: number;
+  user_name: string;
+  user_lastname: string;
+  profilePicture?: string;
+  status: "pending" | "accepted" | "rejected";
+}
+
 interface UserProfile {
   id: number;
   name: string;
@@ -58,8 +66,8 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
     try {
       const response = await fetchWithAuth("/friends");
       if (!response) return;
-      const data = await response.json();
-      const mappedFriends = data.map((friend: any) => ({
+      const data: ApiFriend[] = await response.json();
+      const mappedFriends: Friend[] = data.map((friend) => ({
         id: friend.friend_id,
         name: friend.user_name,
         lastname: friend.user_lastname,
@@ -106,7 +114,7 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
     newSocket.on("friend_status", (updatedFriend: { requestId: number; status: string }) => {
       setFriends((prevFriends) =>
         prevFriends.map((friend) =>
-          friend.id === updatedFriend.requestId ? { ...friend, status: updatedFriend.status as any } : friend
+          friend.id === updatedFriend.requestId ? { ...friend, status: updatedFriend.status as "pending" | "accepted" | "rejected" } : friend
         )
       );
     });
