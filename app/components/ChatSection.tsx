@@ -98,7 +98,7 @@ const ChatSection: React.FC<ChatSectionProps> = ({ socket, selectedFriendId }) =
       });
       
       if (!response || !response.ok) throw new Error("Failed to send message");
-      const result = await response.json();
+      await response.json();
       
       setMessage("");
       setTimeout(() => setShowDove(false), 2000);
