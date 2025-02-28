@@ -46,10 +46,13 @@ const ChatSection: React.FC<ChatSectionProps> = ({ socket, selectedFriendId }) =
           });
           if (!response || !response.ok) throw new Error("Failed to fetch chat history");
           const history: Message[] = await response.json();
-          setMessages(history);
+
+          setMessages(history || []);
         } catch (error) {
           console.error("Error fetching chat history:", error);
           setError("Failed to load chat history");
+
+          setMessages([]);
         }
       }
     };
@@ -63,9 +66,9 @@ const ChatSection: React.FC<ChatSectionProps> = ({ socket, selectedFriendId }) =
     try {
       const timestamp = new Date().toISOString();
       const payload = { userId, message, friendId: selectedFriendId };
-
+  
       socket.emit("message", payload);
-
+  
       setMessages((prev) => [...prev, { ...payload, timestamp }]);
       setMessage("");
       setShowDove(true);
