@@ -36,7 +36,13 @@ const ChatSection: React.FC<ChatSectionProps> = ({ socket, selectedFriendId }) =
   }, []);
 
   useEffect(() => {
+    if (!socket) return;
+
+    socket.on("connect", () => console.log("Socket connected"));
+    socket.on("disconnect", () => console.log("Socket disconnected"));
+
     socket.on("message", (msg: Message) => {
+      console.log("Received message:", msg);
       if (
         (msg.userId === userId && msg.friendId === selectedFriendId) ||
         (msg.userId === selectedFriendId && msg.friendId === userId)
@@ -44,12 +50,15 @@ const ChatSection: React.FC<ChatSectionProps> = ({ socket, selectedFriendId }) =
         setMessages((prev) => [...prev, msg]);
       }
     });
+
     socket.on("typing", ({ friendId }: { friendId: number }) => {
       if (friendId === selectedFriendId) setIsTyping(true);
     });
+
     socket.on("stop_typing", ({ friendId }: { friendId: number }) => {
       if (friendId === selectedFriendId) setIsTyping(false);
     });
+
     return () => {
       socket.off("message");
       socket.off("typing");
@@ -80,11 +89,12 @@ const ChatSection: React.FC<ChatSectionProps> = ({ socket, selectedFriendId }) =
     if (!message.trim() || !selectedFriendId || !userId) return;
     setShowDove(true);
     const timestamp = new Date().toISOString();
+    const payload = { userId, message, friendId: selectedFriendId };
     await fetchWithAuth("/chat/send", {
       method: "POST",
-      body: JSON.stringify({ userId, message, friendId: selectedFriendId }),
+      body: JSON.stringify(payload),
     });
-    socket.emit("send_message", { userId, message, timestamp, friendId: selectedFriendId });
+    socket.emit("message", { ...payload, timestamp });
     setMessage("");
     setTimeout(() => setShowDove(false), 2000);
   };
