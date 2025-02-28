@@ -13,14 +13,6 @@ interface Friend {
   status: "pending" | "accepted" | "rejected";
 }
 
-interface PendingRequest {
-  id: number;
-  senderId: number;
-  senderName: string;
-  senderLastname: string;
-  status: "pending";
-}
-
 interface ApiFriend {
   friend_id: number;
   user_name: string;
@@ -39,7 +31,7 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ userId, searchQuery, onSelectFriend }) => {
   const [friends, setFriends] = useState<Friend[]>([]);
-  const [pendingRequests, setPendingRequests] = useState<PendingRequest[]>([]);
+  const [pendingRequests, setPendingRequests] = useState<Friend[]>([]);
   const [showDove, setShowDove] = useState(false);
 
   useEffect(() => {
@@ -47,38 +39,28 @@ const Sidebar: React.FC<SidebarProps> = ({ userId, searchQuery, onSelectFriend }
       try {
         const response = await fetchWithAuth(`/friends/${userId}`);
         if (!response || !response.ok) throw new Error("Failed to fetch friends");
-        const data = await response.json();
+        const data: ApiFriend[] = await response.json();
         console.log("Raw API Response:", data);
 
-        const mappedFriends: Friend[] = (data.friends || []).map((friend: ApiFriend) => {
-          const mappedFriend = {
-            id: friend.friend_id,
-            name: friend.user_name,
-            lastname: friend.user_lastname,
-            photo: friend.profilePicture || "https://via.placeholder.com/50",
-            status: friend.friend_status,
-          };
-          return mappedFriend;
-        });
-        console.log("Mapped Friends:", mappedFriends); // Log mapped friends
-
-        const mappedRequests: PendingRequest[] = (data.pendingRequests || []).map((req: PendingRequest) => ({
-          id: req.id,
-          senderId: req.senderId,
-          senderName: req.senderName,
-          senderLastname: req.senderLastname,
-          status: req.status,
+        const allFriends: Friend[] = data.map((friend) => ({
+          id: friend.friend_id,
+          name: friend.user_name,
+          lastname: friend.user_lastname,
+          photo: friend.profilePicture || "https://via.placeholder.com/50",
+          status: friend.friend_status,
         }));
-        console.log("Mapped Requests:", mappedRequests); // Log mapped requests
+
+        const acceptedFriends = allFriends.filter((friend) => friend.status === "accepted");
+        const pendingFriends = allFriends.filter((friend) => friend.status === "pending");
 
         setFriends(
-          mappedFriends.filter((friend) =>
+          acceptedFriends.filter((friend) =>
             `${friend.name} ${friend.lastname}`.toLowerCase().includes(searchQuery.toLowerCase())
           )
         );
         setPendingRequests(
-          mappedRequests.filter((req) =>
-            `${req.senderName} ${req.senderLastname}`.toLowerCase().includes(searchQuery.toLowerCase())
+          pendingFriends.filter((friend) =>
+            `${friend.name} ${friend.lastname}`.toLowerCase().includes(searchQuery.toLowerCase())
           )
         );
       } catch (error) {
@@ -108,13 +90,7 @@ const Sidebar: React.FC<SidebarProps> = ({ userId, searchQuery, onSelectFriend }
       if (acceptedRequest) {
         setFriends((prev) => [
           ...prev,
-          {
-            id: requestId,
-            name: acceptedRequest.senderName,
-            lastname: acceptedRequest.senderLastname,
-            photo: "https://via.placeholder.com/50",
-            status: "accepted",
-          },
+          { ...acceptedRequest, status: "accepted" },
         ]);
       }
     } catch (error) {
@@ -166,15 +142,15 @@ const Sidebar: React.FC<SidebarProps> = ({ userId, searchQuery, onSelectFriend }
           <li key={request.id} className={styles.friendItem}>
             <div className={styles.friendPhotoContainer}>
               <Image
-                src="https://via.placeholder.com/50"
-                alt={request.senderName}
+                src={request.photo}
+                alt={request.name}
                 width={50}
                 height={50}
                 className={styles.friendPhoto}
               />
             </div>
             <span className={styles.friendName}>
-              {request.senderName} {request.senderLastname} (Pending Request)
+              {request.name} {request.lastname} (Pending Request)
             </span>
             <div className={styles.friendActions}>
               <button
