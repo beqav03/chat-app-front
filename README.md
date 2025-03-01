@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Real-Time Chat Application
 
-## Getting Started
+A full-stack, real-time chat application built with **NestJS** (backend) and **Next.js** (frontend), featuring secure authentication, friend management, and live messaging powered by **Socket.IO**. This project demonstrates a robust architecture with a MySQL database, TypeORM ORM, and modular CSS styling.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Table of Contents
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Running the Application](#running-the-application)
+- [API Endpoints](#api-endpoints)
+- [Frontend Components](#frontend-components)
+- [Screenshots](#screenshots)
+- [Contributing](#contributing)
+- [License](#license)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Features
+- **User Authentication**: Register, login, and logout with JWT-based authentication and password hashing.
+- **Real-Time Messaging**: Send and receive messages instantly using Socket.IO, with typing indicators and chat history.
+- **Friend System**: Search users, send/accept/reject friend requests, and view friend lists.
+- **Profile Management**: Update name, bio, profile picture, email (with verification), and password.
+- **Notifications**: Real-time friend request updates and UI notifications for actions like successful registration.
+- **Responsive Design**: Clean, modular CSS for a user-friendly experience across devices.
+- **Security**: Role-based access (admin/user/guest), login attempt limits, and email verification.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## Tech Stack
+### Backend
+- **NestJS**: Progressive Node.js framework with TypeScript.
+- **TypeORM**: ORM for MySQL database management.
+- **Socket.IO**: Real-time bidirectional communication.
+- **JWT**: Token-based authentication.
+- **bcryptjs**: Password hashing.
+- **Nodemailer**: Email verification service.
+- **Multer**: File uploads for profile pictures.
+- **MySQL**: Relational database.
 
-To learn more about Next.js, take a look at the following resources:
+### Frontend
+- **Next.js**: React framework for server-side rendering and static generation.
+- **React**: UI library with hooks and state management.
+- **Socket.IO Client**: For real-time client-server communication.
+- **CSS Modules**: Scoped styling for components.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Project Structure
