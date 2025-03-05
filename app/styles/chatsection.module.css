@@ -43,6 +43,12 @@
   max-width: 100%;
 }
 
+.message.typing {
+  background: #e0e0e0;
+  color: #666;
+  font-style: italic;
+}
+
 .messageHeader {
   display: flex;
   justify-content: space-between;
