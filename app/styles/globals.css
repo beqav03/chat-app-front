@@ -1,0 +1,30 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  background-color: #f9f9f9;
+  color: #333;
+  height: calc(100vh - 8px);
+}
+
+.container {
+  display: flex;
+  flex-direction: row;
+}
+
+.mainContent {
+  display: flex;
+  height: calc(100vh - 56px);
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .mainContent {
+    flex-direction: column;
+  }
+}

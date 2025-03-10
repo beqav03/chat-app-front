@@ -1,0 +1,21 @@
+.mainApp {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #ffffff;
+}
+
+.content {
+  display: flex;
+  flex: 1;
+  background: #f9f9f9;
+  border-radius: 12px;
+  margin: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.error {
+  color: #dc3545;
+  text-align: center;
+  padding: 10px;
+}

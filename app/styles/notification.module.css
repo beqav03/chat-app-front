@@ -1,0 +1,23 @@
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  color: white;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.notification.visible {
+  opacity: 1;
+}
+
+.notification.success {
+  background: linear-gradient(135deg, #28a745, #34d058);
+}
+
+.notification.error {
+  background: linear-gradient(135deg, #dc3545, #e4606d);
+}
