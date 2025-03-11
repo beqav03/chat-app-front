@@ -1,14 +1,17 @@
 export async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
+  console.log("Backend URL:", process.env.NEXT_PUBLIC_API_URL);
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   if (!backendUrl) {
     console.error("NEXT_PUBLIC_BACKEND_URL is missing.");
     return null;
   }
+  console.log("Backend URL:", process.env.NEXT_PUBLIC_API_URL);
 
   const url = new URL(
     endpoint.replace(/^\//, ""),
     backendUrl.endsWith("/") ? backendUrl.slice(0, -1) : backendUrl
   ).toString();
+  console.log("Backend URL:", process.env.NEXT_PUBLIC_API_URL);
 
   try {
     const response = await fetch(url, {
