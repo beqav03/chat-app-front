@@ -4,7 +4,7 @@ import styles from "../styles/auth.module.css";
 import MainApp from "./MainApp";
 import Notification from "./Notification";
 import LoadingSpinner from "./LoadingSpinner";
-import { fetchWithAuth } from "./path-to-fetchWithAuth"; // Import the fetchWithAuth function
+import { fetchWithAuth } from "../utils/api"; 
 
 const AuthPage: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
