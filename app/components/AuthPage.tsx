@@ -4,6 +4,7 @@ import styles from "../styles/auth.module.css";
 import MainApp from "./MainApp";
 import Notification from "./Notification";
 import LoadingSpinner from "./LoadingSpinner";
+import { fetchWithAuth } from "./path-to-fetchWithAuth"; // Import the fetchWithAuth function
 
 const AuthPage: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -38,19 +39,12 @@ const AuthPage: React.FC = () => {
     setIsLoading(true);
     setError("");
     try {
-      console.log("Backend URL:", process.env.NEXT_PUBLIC_API_URL);
-      const url = isRegistering
-        ? `${process.env.NEXT_PUBLIC_API_URL}/user/register`
-        : `${process.env.NEXT_PUBLIC_API_URL}/auth/login`;
-      const response = await fetch(`${url}`, {
+      const endpoint = isRegistering ? "user/register" : "auth/login";
+      const response = await fetchWithAuth(endpoint, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Authentication failed");
-      }
+      if (!response) throw new Error("Failed to connect to backend");
       const responseData = await response.json();
       if (isRegistering) {
         setShowSuccess(true);
