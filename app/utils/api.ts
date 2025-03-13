@@ -7,7 +7,7 @@ export async function fetchWithAuth(endpoint: string, options: RequestInit = {})
 
   const url = new URL(
     endpoint.startsWith("/") ? endpoint : `/${endpoint}`,
-    `https://${backendUrl}`
+    `${backendUrl}`
   ).toString();
 
   try {
