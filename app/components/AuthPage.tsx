@@ -42,12 +42,12 @@ const AuthPage: React.FC = () => {
       const url = isRegistering
         ? `${process.env.NEXT_PUBLIC_API_URL}/user/register`
         : `${process.env.NEXT_PUBLIC_API_URL}/auth/login`;
-      const response = await fetch(url, {
+      const response = await fetch(`https://${url}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-      console.log("Backend URL:", process.env.NEXT_PUBLIC_API_URL);
+      console.log("Request URL:", `https://${url}`);
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Authentication failed");
