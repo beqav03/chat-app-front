@@ -38,6 +38,7 @@ const AuthPage: React.FC = () => {
     setIsLoading(true);
     setError("");
     try {
+      console.log("Backend URL:", process.env.NEXT_PUBLIC_API_URL);
       const url = isRegistering
         ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/user/register`
         : `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`;
@@ -46,6 +47,7 @@ const AuthPage: React.FC = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
+      console.log("Backend URL:", process.env.NEXT_PUBLIC_API_URL);
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Authentication failed");
