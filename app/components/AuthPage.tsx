@@ -40,8 +40,8 @@ const AuthPage: React.FC = () => {
     try {
       console.log("Backend URL:", process.env.NEXT_PUBLIC_API_URL);
       const url = isRegistering
-        ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/user/register`
-        : `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`;
+        ? `${process.env.NEXT_PUBLIC_API_URL}/user/register`
+        : `${process.env.NEXT_PUBLIC_API_URL}/auth/login`;
       const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

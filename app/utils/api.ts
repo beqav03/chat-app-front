@@ -1,10 +1,10 @@
 export async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+  const backendUrl = process.env.NEXT_PUBLIC_API_URL;
   
   console.log("Backend URL:", process.env.NEXT_PUBLIC_API_URL);
 
   if (!backendUrl) {
-    console.error("NEXT_PUBLIC_BACKEND_URL is missing.");
+    console.error("NEXT_PUBLIC_API_URL is missing.");
     return null;
   }
 
