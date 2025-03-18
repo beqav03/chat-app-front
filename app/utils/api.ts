@@ -1,8 +1,6 @@
 export async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
   const backendUrl = process.env.NEXT_PUBLIC_API_URL;
 
-  console.log("backendUrl:", backendUrl);
-
   if (!backendUrl) {
     console.error("NEXT_PUBLIC_API_URL is missing.");
     return null;
@@ -14,7 +12,6 @@ export async function fetchWithAuth(endpoint: string, options: RequestInit = {})
       endpoint.replace(/^\//, ""),
       backendUrl.endsWith("/") ? backendUrl.slice(0, -1) : backendUrl
     ).toString();
-    console.log("Constructed URL:", url);
   } catch (error) {
     console.error("Invalid base URL:", error);
     return null;
