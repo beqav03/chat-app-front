@@ -1,14 +1,23 @@
 export async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
-  const backendUrl = process.env.NEXT_PUBLIC_API_URL;
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+  console.log("backendUrl:", backendUrl);
+
   if (!backendUrl) {
-    console.error("NEXT_PUBLIC_API_URL is missing.");
+    console.error("NEXT_PUBLIC_BACKEND_URL is missing.");
     return null;
   }
 
-  const url = new URL(
-    endpoint.startsWith("/") ? endpoint : `/${endpoint}`,
-    backendUrl
-  ).toString();
+  let url;
+  try {
+    url = new URL(
+      endpoint.replace(/^\//, ""),
+      backendUrl.endsWith("/") ? backendUrl.slice(0, -1) : backendUrl
+    ).toString();
+    console.log("Constructed URL:", url);
+  } catch (error) {
+    console.error("Invalid base URL:", error);
+    return null;
+  }
 
   try {
     const response = await fetch(url, {
@@ -25,7 +34,8 @@ export async function fetchWithAuth(endpoint: string, options: RequestInit = {})
         localStorage.removeItem("token");
         window.location.href = "/login";
       }
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorData = await response.json();
+      throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
     }
 
     return response;
