@@ -1,6 +1,5 @@
 export async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
-  const backendReq = process.env.NEXT_BACKEND_URL || "";
-  const backendUrl = backendReq.toString();
+  const backendUrl = process.env.NEXT_BACKEND_URL;
 
   console.log("backendUrl:", backendUrl);
 
