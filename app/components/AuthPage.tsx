@@ -39,30 +39,37 @@ const AuthPage: React.FC = () => {
     setIsLoading(true);
     setError("");
     try {
-      const endpoint = isRegistering ? "user/register" : "auth/login";
-      const response = await fetchWithAuth(endpoint, {
-        method: "POST",
-        body: JSON.stringify(formData),
-      });
-      if (!response) throw new Error("Failed to connect to backend");
-      const responseData = await response.json();
-      if (isRegistering) {
-        setShowSuccess(true);
-        setTimeout(() => {
-          setShowSuccess(false);
-          setIsRegistering(false);
-          setFormData({ name: "", email: "", password: "", confirmPassword: "" });
-        }, 3000);
-      } else if (responseData.token) {
-        localStorage.setItem("token", responseData.token);
-        setIsAuthenticated(true);
-      }
+        const endpoint = isRegistering ? "user/register" : "auth/login";
+        const response = await fetchWithAuth(endpoint, {
+            method: "POST",
+            body: JSON.stringify(formData),
+        });
+
+        if (!response) throw new Error("Failed to connect to backend");
+        const responseData = await response.json();
+
+        if (!response.ok) {
+            throw new Error(responseData.message || "Login failed. Please check your credentials.");
+        }
+
+        if (isRegistering) {
+            setShowSuccess(true);
+            setTimeout(() => {
+                setShowSuccess(false);
+                setIsRegistering(false);
+                setFormData({ name: "", email: "", password: "", confirmPassword: "" });
+            }, 3000);
+        } else if (responseData.token) {
+            localStorage.setItem("token", responseData.token);
+            setIsAuthenticated(true);
+        }
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "An unknown error occurred");
+        setError(err instanceof Error ? err.message : "An unknown error occurred");
     } finally {
-      setIsLoading(false);
+        setIsLoading(false);
     }
-  };
+};
+
 
   const handleLogout = (): void => {
     localStorage.removeItem("token");
