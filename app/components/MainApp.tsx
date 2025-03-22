@@ -9,10 +9,6 @@ import styles from "../styles/mainapp.module.css";
 import { fetchWithAuth } from "../utils/api";
 import ProfileModal from "./ProfileModal";
 
-interface MainAppProps {
-  onLogout: () => void;
-}
-
 interface Friend {
   id: number;
   name: string;
@@ -38,7 +34,7 @@ interface UserProfile {
   bio?: string;
 }
 
-const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
+const MainApp: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
   const [friends, setFriends] = useState<Friend[]>([]);
   const [socket, setSocket] = useState<Socket | null>(null);
   const [error, setError] = useState("");
@@ -46,7 +42,17 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [userId, setUserId] = useState<number | null>(null);
   const [selectedFriendId, setSelectedFriendId] = useState<number | null>(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const router = useRouter();
+
+  const toggleDarkMode = () => {
+    setIsDarkMode((prev) => !prev);
+    document.documentElement.setAttribute("data-theme", isDarkMode ? "light" : "dark");
+  };
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", isDarkMode ? "dark" : "light");
+  }, [isDarkMode]);
 
   const fetchUserProfile = useCallback(async () => {
     try {
@@ -138,7 +144,13 @@ const MainApp: React.FC<MainAppProps> = ({ onLogout }) => {
 
   return (
     <div className={styles.mainApp}>
-      <Header onLogout={onLogout} onProfileClick={() => setIsProfileOpen(true)} setSearchQuery={setSearchQuery} />
+      <Header
+        onLogout={onLogout}
+        onProfileClick={() => setIsProfileOpen(true)}
+        setSearchQuery={setSearchQuery}
+        toggleDarkMode={toggleDarkMode}
+        isDarkMode={isDarkMode}
+      />
       {error && <div className={styles.error}>{error}</div>}
       <div className={styles.content}>
         {userId && (

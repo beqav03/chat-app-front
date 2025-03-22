@@ -3,7 +3,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { Socket } from "socket.io-client";
 import styles from "../styles/chatsection.module.css";
 import { fetchWithAuth } from "../utils/api";
-import DoveAnimation from "./DoveAnimation";
 
 interface ChatSectionProps {
   socket: Socket;
@@ -21,7 +20,6 @@ interface Message {
 const ChatSection: React.FC<ChatSectionProps> = ({ socket, selectedFriendId }) => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
-  const [showDove, setShowDove] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [userId, setUserId] = useState<number | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -88,7 +86,6 @@ const ChatSection: React.FC<ChatSectionProps> = ({ socket, selectedFriendId }) =
   const sendMessage = async () => {
     if (!message.trim() || !selectedFriendId || !userId) return;
     
-    setShowDove(true);
     const payload = { userId, message, friendId: selectedFriendId };
     
     try {
@@ -101,7 +98,6 @@ const ChatSection: React.FC<ChatSectionProps> = ({ socket, selectedFriendId }) =
       await response.json();
       
       setMessage("");
-      setTimeout(() => setShowDove(false), 2000);
     } catch (error) {
       console.error("Error sending message:", error);
     }
@@ -116,7 +112,6 @@ const ChatSection: React.FC<ChatSectionProps> = ({ socket, selectedFriendId }) =
 
   return (
     <div className={styles.chatSection}>
-      {showDove && <DoveAnimation />}
       <div className={styles.messages}>
         {messages.map((msg) => (
           <div

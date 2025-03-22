@@ -8,13 +8,14 @@ import Logo from "../icons/chat.svg";
 import Close from "../icons/close.svg";
 import Image from "next/image";
 import { fetchWithAuth } from "../utils/api";
-import DoveAnimation from "./DoveAnimation";
 import Notification from "./Notification";
 
 interface HeaderProps {
   onLogout: () => void;
   setSearchQuery: (query: string) => void;
   onProfileClick?: () => void;
+  toggleDarkMode: () => void;
+  isDarkMode: boolean;
 }
 
 interface User {
@@ -24,7 +25,7 @@ interface User {
   email: string;
 }
 
-const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClick }) => {
+const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClick, toggleDarkMode, isDarkMode }) => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [notifications, setNotifications] = useState<string[]>([]);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
@@ -32,7 +33,6 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
   const [searchResults, setSearchResults] = useState<User[]>([]);
   const [isSearchResultsVisible, setIsSearchResultsVisible] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
-  const [showDove, setShowDove] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const handleLogout = async () => {
@@ -74,7 +74,6 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
   };
 
   const sendFriendRequest = async (receiverId: number) => {
-    setShowDove(true);
     try {
       const response = await fetchWithAuth(`/friends/request/${receiverId}`, { method: "POST" });
       if (!response || !response.ok) throw new Error("Failed to send friend request");
@@ -83,8 +82,6 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
     } catch (error) {
       console.error("Error sending friend request:", error);
       alert("Failed to send friend request");
-    } finally {
-      setTimeout(() => setShowDove(false), 2000);
     }
   };
 
@@ -103,7 +100,6 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
   return (
     <>
       <header className={styles.header}>
-        {showDove && <DoveAnimation />}
         <div className={styles.logo}>
           <Image src={Logo} alt="Search" width={50} height={50} />
         </div>
@@ -150,6 +146,9 @@ const Header: React.FC<HeaderProps> = ({ onLogout, setSearchQuery, onProfileClic
                   <li onClick={onProfileClick}>Profile</li>
                   <li>Settings</li>
                   <li onClick={handleLogout}>Logout</li>
+                  <li onClick={toggleDarkMode}>
+                    {isDarkMode ? "Light Mode" : "Dark Mode"}
+                  </li>
                 </ul>
               </div>
             )}

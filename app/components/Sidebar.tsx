@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import styles from "../styles/sidebar.module.css";
 import Image from "next/image";
 import { fetchWithAuth } from "../utils/api";
-import DoveAnimation from "./DoveAnimation";
 
 interface Friend {
   id: number;
@@ -32,7 +31,6 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ userId, searchQuery, onSelectFriend }) => {
   const [friends, setFriends] = useState<Friend[]>([]);
   const [pendingRequests, setPendingRequests] = useState<Friend[]>([]);
-  const [showDove, setShowDove] = useState(false);
   const [selectedFriendId, setSelectedFriendId] = useState<number | null>(null);
 
   useEffect(() => {
@@ -76,7 +74,6 @@ const Sidebar: React.FC<SidebarProps> = ({ userId, searchQuery, onSelectFriend }
   };
 
   const handleAcceptFriendRequest = async (requestId: number) => {
-    setShowDove(true);
     try {
       const response = await fetchWithAuth(`/friends/accept/${requestId}`, { method: "POST" });
       if (!response || !response.ok) throw new Error("Failed to accept friend request");
@@ -90,27 +87,21 @@ const Sidebar: React.FC<SidebarProps> = ({ userId, searchQuery, onSelectFriend }
       }
     } catch (error) {
       console.error("Error accepting friend request:", error);
-    } finally {
-      setTimeout(() => setShowDove(false), 2000);
     }
   };
 
   const handleRejectFriendRequest = async (requestId: number) => {
-    setShowDove(true);
     try {
       const response = await fetchWithAuth(`/friends/reject/${requestId}`, { method: "POST" });
       if (!response || !response.ok) throw new Error("Failed to reject friend request");
       setPendingRequests((prev) => prev.filter((req) => req.id !== requestId));
     } catch (error) {
       console.error("Error rejecting friend request:", error);
-    } finally {
-      setTimeout(() => setShowDove(false), 2000);
     }
   };
 
   return (
     <aside className={styles.sidebar}>
-      {showDove && <DoveAnimation />}
       <h2>Friends</h2>
       <ul className={styles.friendList}>
         {friends.map((friend) => (
