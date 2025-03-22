@@ -51,7 +51,7 @@ const MainApp: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
   };
 
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", isDarkMode ? "dark" : "light");
+    document.body.setAttribute("data-theme", isDarkMode ? "dark" : "light");
   }, [isDarkMode]);
 
   const fetchUserProfile = useCallback(async () => {
