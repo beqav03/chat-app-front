@@ -9,7 +9,7 @@
   position: relative;
 }
 
-:root {
+.header {
   --header-bg: linear-gradient(135deg, #ffffff, #f5f5f5);
   --border-color: #e0e0e0;
   --text-color: #333;
@@ -19,7 +19,7 @@
   --modal-text: #333;
 }
 
-[data-theme="dark"] {
+[data-theme="dark"] .header {
   --header-bg: linear-gradient(135deg, #1e1e1e, #2c2c2c);
   --border-color: #444;
   --text-color: #f5f5f5;
